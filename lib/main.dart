@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kyb/pages/front.dart';
-import 'package:kyb/pages/splash.dart';
-import 'package:kyb/pages/login.dart';
-import 'package:kyb/pages/register.dart';
+import 'package:kyb/pages/pages.dart'; // PUT ALL PAGES IN PAGES.DART
 
 void main() => runApp(MaterialApp(initialRoute: '/register', routes: {
       '/': (context) => SplashScreen(),

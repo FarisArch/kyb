@@ -15,12 +15,12 @@ class _FrontPageState extends State<FrontPage> {
       body: SafeArea(
           child: Column(children: [
         Padding(
-          padding: EdgeInsets.fromLTRB(0, 100, 0, 0),
+          padding: EdgeInsets.fromLTRB(0, 80, 0, 0),
           child: Center(
             child: Text(
               'KYB',
               style: TextStyle(
-                fontSize: 90,
+                fontSize: 110,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -29,9 +29,10 @@ class _FrontPageState extends State<FrontPage> {
         ),
         Text(
           'Know Your Business',
-          style: TextStyle(fontSize: 30, color: Colors.white),
+          style: TextStyle(fontSize: 25, color: Colors.white, letterSpacing: 2.0),
+
         ),
-        SizedBox(height: 50),
+        SizedBox(height: 40),
         ElevatedButton(
           onPressed: () {},
           style: ElevatedButton.styleFrom(

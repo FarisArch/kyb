@@ -11,7 +11,7 @@ class _FrontPageState extends State<FrontPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 236, 201, 160),
+      backgroundColor: const Color.fromARGB(240, 255, 220, 80),
       body: SafeArea(
           child: Column(children: [
         Padding(
@@ -20,8 +20,8 @@ class _FrontPageState extends State<FrontPage> {
             child: Text(
               'KYB',
               style: TextStyle(
-                fontSize: 80,
-                color: Colors.purple[900],
+                fontSize: 90,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -29,14 +29,16 @@ class _FrontPageState extends State<FrontPage> {
         ),
         Text(
           'Know Your Business',
-          style: TextStyle(fontSize: 35, color: Colors.purple[900]),
+          style: TextStyle(fontSize: 30, color: Colors.white),
         ),
         SizedBox(height: 50),
         ElevatedButton(
           onPressed: () {},
           style: ElevatedButton.styleFrom(
-            minimumSize: Size(200, 60), // Set the minimum size of the button
-            textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), // Set the text style
+            foregroundColor: const Color.fromARGB(240, 255, 220, 80), // Set the text color to your specific yellow
+            backgroundColor: Colors.white, // Set the button's background color
+            minimumSize: Size(260, 60), // Set the minimum size of the button
+            textStyle: TextStyle(fontSize: 25, fontWeight: FontWeight.bold), // Set the text style
           ),
           child: Text('Sign in'),
         ),
@@ -44,8 +46,10 @@ class _FrontPageState extends State<FrontPage> {
         ElevatedButton(
           onPressed: () {},
           style: ElevatedButton.styleFrom(
-            minimumSize: Size(200, 60), // Set the minimum size of the button
-            textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), // Set the text style
+            foregroundColor: const Color.fromARGB(240, 255, 220, 80), // Set the text color to your specific yellow
+            backgroundColor: Colors.white, // Set the button's background color
+            minimumSize: Size(260, 60), // Set the minimum size of the button
+            textStyle: TextStyle(fontSize: 25, fontWeight: FontWeight.bold), // Set the text style
           ),
           child: Text('Create an account'),
         ),
@@ -53,8 +57,10 @@ class _FrontPageState extends State<FrontPage> {
         ElevatedButton(
           onPressed: () {},
           style: ElevatedButton.styleFrom(
-            minimumSize: Size(200, 60), // Set the minimum size of the button
-            textStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold), // Set the text style
+            foregroundColor: const Color.fromARGB(240, 255, 220, 80), // Set the text color to your specific yellow
+            backgroundColor: Colors.white, // Set the button's background color
+            minimumSize: Size(260, 60), // Set the minimum size of the button
+            textStyle: TextStyle(fontSize: 25, fontWeight: FontWeight.bold), // Set the text style
           ),
           child: Text('Guest Mode'),
         ),

@@ -43,7 +43,7 @@ class SuccessfulRegister extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => Dashboard()),
+                  MaterialPageRoute(builder: (context) => DashboardRegister()),
                 );
               },
               child: Text('Continue'),
@@ -63,7 +63,7 @@ class SuccessfulRegister extends StatelessWidget {
 }
 
 // Placeholder for the dashboard
-class Dashboard extends StatelessWidget {
+class DashboardRegister extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

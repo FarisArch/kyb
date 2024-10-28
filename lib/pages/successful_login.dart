@@ -43,7 +43,7 @@ class SuccessfulLogin extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => Dashboard()),
+                  MaterialPageRoute(builder: (context) => DashboardLogin()),
                 );
               },
               child: Text('Continue'),
@@ -63,7 +63,7 @@ class SuccessfulLogin extends StatelessWidget {
 }
 
 // Placeholder for the dashboard
-class Dashboard extends StatelessWidget {
+class DashboardLogin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

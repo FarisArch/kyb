@@ -20,7 +20,7 @@ class _FrontPageState extends State<FrontPage> {
             child: Text(
               'KYB',
               style: TextStyle(
-                fontSize: 110,
+                fontSize: 120,
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -29,7 +29,7 @@ class _FrontPageState extends State<FrontPage> {
         ),
         Text(
           'Know Your Business',
-          style: TextStyle(fontSize: 25, color: Colors.white, letterSpacing: 2.0),
+          style: TextStyle(fontSize: 25, color: Colors.white, letterSpacing: 2.5),
 
         ),
         SizedBox(height: 40),

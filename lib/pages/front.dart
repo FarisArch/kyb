@@ -11,7 +11,7 @@ class _FrontPageState extends State<FrontPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(240, 255, 220, 80),
+      backgroundColor: const Color.fromRGBO(255, 220, 80, 1),
       body: SafeArea(
           child: Column(children: [
         Padding(

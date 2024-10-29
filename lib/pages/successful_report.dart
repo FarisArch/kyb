@@ -6,7 +6,7 @@ class SuccessfulReport extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 236, 201, 160), // Original background color
+      backgroundColor: const Color.fromRGBO(255, 220, 80, 1), // Original background color
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -18,7 +18,7 @@ class SuccessfulReport extends StatelessWidget {
                 child: Text(
                   'Your report was successfully submitted!',
                   style: TextStyle(
-                    fontSize: 40,
+                    fontSize: 35,
                     color: Colors.green, // Green color for the title
                     fontWeight: FontWeight.bold,
                   ),
@@ -32,8 +32,8 @@ class SuccessfulReport extends StatelessWidget {
               child: Text(
                 'Thank you for your contribution.',
                 style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.purple[900],
+                  fontSize: 22,
+                  color: Colors.white,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -49,10 +49,12 @@ class SuccessfulReport extends StatelessWidget {
               child: Text('Continue'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                textStyle: const TextStyle(fontSize: 18),
+                textStyle: const TextStyle(fontSize: 20),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30), // Rounded button
                 ),
+                backgroundColor: Colors.pink,
+                foregroundColor: Colors.white,
               ),
             ),
           ],

@@ -59,7 +59,7 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      backgroundColor: Color.fromRGBO(238, 206, 77, 100),
+      backgroundColor: const Color.fromRGBO(255, 220, 80, 1),
       body: SafeArea(
         child: Column(
           children: [
@@ -71,9 +71,9 @@ class _HomeState extends State<Home> {
                 ),
                 child: Text(
                   'Support Local-la!',
-                  style: TextStyle(color: Color.fromRGBO(238, 206, 77, 100), fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Color.fromRGBO(255, 220, 80, 1), fontSize: 25, fontWeight: FontWeight.bold),
                 ),
-                padding: EdgeInsets.all(5),
+                padding: EdgeInsets.fromLTRB(20,5,20,5),
               ),
             ),
             SizedBox(height: 5),
@@ -171,9 +171,9 @@ class _HomeState extends State<Home> {
                   decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.white),
                   child: Text(
                     'Flash news',
-                    style: TextStyle(color: Color.fromRGBO(238, 206, 77, 100), fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Color.fromRGBO(255, 220, 80, 1), fontSize: 25, fontWeight: FontWeight.bold),
                   ),
-                  padding: EdgeInsets.all(10),
+                  padding: EdgeInsets.fromLTRB(20,5,20,5),
                 ),
                 Container(
                   height: 140,
@@ -184,7 +184,7 @@ class _HomeState extends State<Home> {
                       },
                       child: Image.asset('assets/1.jpg')),
                 ),
-                Center(child: Container(height: 40, width: 300, color: Colors.white, child: Text('These cases are perfectly simple and easy to distinguish.  ')))
+                Center(child: Container(height: 50, width: 350, color: Colors.white, child: Text('These cases are perfectly simple and easy to distinguish.')))
               ],
             ),
           ],

@@ -5,9 +5,9 @@ class NewsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 200,
-      width: 300,
+      width: 320,
       color: Colors.white,
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -25,8 +25,8 @@ class NewsCard extends StatelessWidget {
           Text(
             "Aljazeera News",
             style: TextStyle(
-              color: Colors.orange,
-              fontSize: 14,
+              color: Color.fromRGBO(255, 220, 80, 1),
+              fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
           ),

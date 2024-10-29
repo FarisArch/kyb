@@ -59,12 +59,12 @@ class _NewsPageState extends State<NewsPage> {
           ),
         ],
       ),
-      backgroundColor: Color.fromRGBO(238, 206, 77, 100),
+      backgroundColor: Color.fromRGBO(255, 220, 80, 1),
       body: SafeArea(
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              padding: const EdgeInsets.symmetric(vertical: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -75,16 +75,14 @@ class _NewsPageState extends State<NewsPage> {
                 ],
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
 
             // Using NewsCard here
             Center(
                 child: Column(
               children: [
                 NewsCard(),
-                SizedBox(
-                  height: 5,
-                ),
+                SizedBox(height: 30),
                 NewsCard(),
               ],
             )),
@@ -108,7 +106,7 @@ class _NewsPageState extends State<NewsPage> {
         child: Text(
           title,
           style: TextStyle(
-            color: Color.fromRGBO(238, 206, 77, 100),
+            color: Color.fromRGBO(255, 220, 80, 1),
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),

@@ -17,7 +17,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 236, 201, 160),
+      backgroundColor: const Color.fromRGBO(255, 220, 80, 1),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -26,14 +26,14 @@ class _RegisterPageState extends State<RegisterPage> {
                 padding: EdgeInsets.fromLTRB(0, 100, 100, 0),
                 child: Text(
                   'Create Account',
-                  style: TextStyle(fontSize: 35),
+                  style: TextStyle(fontSize: 35, color: Colors.white),
                 ),
               ),
               const Padding(
                 padding: EdgeInsets.fromLTRB(0, 0, 90, 50),
                 child: Text(
                   'Please sign-up to continue',
-                  style: TextStyle(fontSize: 20),
+                  style: TextStyle(fontSize: 20, color: Colors.white),
                 ),
               ),
               Form(
@@ -46,11 +46,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: TextFormField(
                           decoration: const InputDecoration(
                             hintText: 'Full Name',
-                            hintStyle: TextStyle(color: Colors.white),
-                            border: OutlineInputBorder(),
+                            hintStyle: TextStyle(color: Color.fromRGBO(255, 220, 80, 1)),
                             prefixIcon: Icon(Icons.person),
                             filled: true,
-                            fillColor: Colors.purple,
+                            fillColor: Colors.white,
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -69,11 +68,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: TextFormField(
                           decoration: const InputDecoration(
                             hintText: 'Email',
-                            hintStyle: TextStyle(color: Colors.white),
-                            border: OutlineInputBorder(),
+                            hintStyle: TextStyle(color: Color.fromRGBO(255, 220, 80, 1)),
                             prefixIcon: Icon(Icons.email),
                             filled: true,
-                            fillColor: Colors.purple,
+                            fillColor: Colors.white,
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -93,11 +91,10 @@ class _RegisterPageState extends State<RegisterPage> {
                           obscureText: true,
                           decoration: const InputDecoration(
                             hintText: 'Password',
-                            hintStyle: TextStyle(color: Colors.white),
-                            border: OutlineInputBorder(),
+                            hintStyle: TextStyle(color: Color.fromRGBO(255, 220, 80, 1)),
                             prefixIcon: Icon(Icons.lock),
                             filled: true,
-                            fillColor: Colors.purple,
+                            fillColor: Colors.white,
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -117,11 +114,10 @@ class _RegisterPageState extends State<RegisterPage> {
                           obscureText: true,
                           decoration: const InputDecoration(
                             hintText: 'Confirm Password',
-                            hintStyle: TextStyle(color: Colors.white),
-                            border: OutlineInputBorder(),
+                            hintStyle: TextStyle(color: Color.fromRGBO(255, 220, 80, 1)),
                             prefixIcon: Icon(Icons.lock),
                             filled: true,
-                            fillColor: Colors.purple,
+                            fillColor: Colors.white,
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -139,7 +135,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(240, 0, 0, 0),
-                      child: ElevatedButton(
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.pink, // Set the background color to pink
+                      ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();
@@ -150,9 +149,11 @@ class _RegisterPageState extends State<RegisterPage> {
                             print('Confirm Password: $_confirmPassword');
                           }
                         },
-                        child: Text('Sign up'),
+                        icon: Icon(Icons.login),
+                        label: Text('Sign up'),
                       ),
                     ),
+                    SizedBox(height: 20),
                     Text('Already have an account? Sign in'),
                   ],
                 ),

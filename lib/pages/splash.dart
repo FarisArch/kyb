@@ -11,7 +11,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 236, 201, 160),
+      backgroundColor: const Color.fromRGBO(255, 220, 80, 1),
       body: SafeArea(
           child: Column(children: [
         Padding(
@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
               'KYB',
               style: TextStyle(
                 fontSize: 80,
-                color: Colors.purple[900],
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
         Text(
           'Know Your Business',
-          style: TextStyle(fontSize: 35, color: Colors.purple[900]),
+          style: TextStyle(fontSize: 35, color: Colors.white),
         )
       ])),
     );

@@ -8,3 +8,4 @@ export 'package:kyb/pages/successful_login.dart';
 export 'package:kyb/pages/successful_register.dart';
 export 'package:kyb/pages/successful_report.dart';
 export 'package:kyb/pages/home.dart';
+export 'package:kyb/pages/news.dart';

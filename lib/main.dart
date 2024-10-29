@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kyb/pages/pages.dart'; // PUT ALL PAGES IN PAGES.DART
 
-void main() => runApp(MaterialApp(initialRoute: '/home', routes: {
+void main() => runApp(MaterialApp(initialRoute: '/news', routes: {
       '/': (context) => SplashScreen(),
       '/front': (context) => FrontPage(),
       '/login': (context) => LoginPage(),
@@ -11,4 +11,5 @@ void main() => runApp(MaterialApp(initialRoute: '/home', routes: {
       '/successfulContribute': (context) => SuccessfulContribute(),
       '/successfulReport': (context) => SuccessfulReport(),
       '/home': (context) => Home(),
+      '/news': (context) => NewsPage(),
     }));

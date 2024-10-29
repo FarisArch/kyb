@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sort_child_properties_last
 
 import 'package:flutter/material.dart';
-import 'package:kyb/pages/news_card.dart'; // Import the separate NewsCard file
+import 'package:kyb/pages/pages.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
@@ -13,15 +13,50 @@ class NewsPage extends StatefulWidget {
 class _NewsPageState extends State<NewsPage> {
   @override
   Widget build(BuildContext context) {
+    int _currentIndex = 0;
     return Scaffold(
       bottomNavigationBar: NavigationBar(
         height: 60,
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (index) {
+          if (index == 0) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Home(),
+              ),
+            );
+          } else if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NewsPage(),
+              ),
+            );
+          }
+          setState(() => _currentIndex = index);
+        },
         destinations: [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.newspaper), label: 'News'),
-          NavigationDestination(icon: Icon(Icons.scanner), label: ''),
-          NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
-          NavigationDestination(icon: Icon(Icons.add_box), label: 'Contribute'),
+          NavigationDestination(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.newspaper),
+            label: 'News',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.camera),
+            label: 'Scan',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.add_a_photo),
+            label: 'Contribute',
+          ),
         ],
       ),
       backgroundColor: Color.fromRGBO(238, 206, 77, 100),

@@ -44,8 +44,8 @@ class NewsCard extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Image.network(
-                    'https://example.com/image.jpg', // Replace with your image URL
+                  child: Image.asset(
+                    'assets/1.jpg', // Replace with your image URL
                     fit: BoxFit.cover,
                   ),
                 ),

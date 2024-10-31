@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:kyb/pages/news.dart';
+import 'package:kyb/pages/pages.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -20,17 +20,24 @@ class _HomeState extends State<Home> {
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {
           if (index == 0) {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => Home(),
               ),
             );
           } else if (index == 1) {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => NewsPage(),
+              ),
+            );
+          } else if (index == 2) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ScanPage(),
               ),
             );
           }
@@ -73,7 +80,7 @@ class _HomeState extends State<Home> {
                   'Support Local-la!',
                   style: TextStyle(color: Color.fromRGBO(255, 220, 80, 1), fontSize: 25, fontWeight: FontWeight.bold),
                 ),
-                padding: EdgeInsets.fromLTRB(20,5,20,5),
+                padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
               ),
             ),
             SizedBox(height: 5),
@@ -173,7 +180,7 @@ class _HomeState extends State<Home> {
                     'Flash news',
                     style: TextStyle(color: Color.fromRGBO(255, 220, 80, 1), fontSize: 25, fontWeight: FontWeight.bold),
                   ),
-                  padding: EdgeInsets.fromLTRB(20,5,20,5),
+                  padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
                 ),
                 Container(
                   height: 140,

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "138817668884",
+    "project_id": "know-your-business-fyp",
+    "storage_bucket": "know-your-business-fyp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:138817668884:android:b19b39acb31e173dbea401",
+        "android_client_info": {
+          "package_name": "com.farisqas.kyb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-y9F2MatfjnuuWEUHHKisz7NdJQ6gAjM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

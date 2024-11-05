@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, sort_child_properties_last
 
 import 'package:flutter/material.dart';
+import 'package:kyb/navigation/navigation_bar.dart';
 import 'package:kyb/pages/pages.dart';
 
 class NewsPage extends StatefulWidget {
@@ -15,50 +16,7 @@ class _NewsPageState extends State<NewsPage> {
   Widget build(BuildContext context) {
     int _currentIndex = 0;
     return Scaffold(
-      bottomNavigationBar: NavigationBar(
-        height: 60,
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          if (index == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Home(),
-              ),
-            );
-          } else if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => NewsPage(),
-              ),
-            );
-          }
-          setState(() => _currentIndex = index);
-        },
-        destinations: [
-          NavigationDestination(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.newspaper),
-            label: 'News',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.camera),
-            label: 'Scan',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.add_a_photo),
-            label: 'Contribute',
-          ),
-        ],
-      ),
+      bottomNavigationBar: NavigationControl(),
       backgroundColor: Color.fromRGBO(255, 220, 80, 1),
       body: SafeArea(
         child: Column(

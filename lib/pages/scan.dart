@@ -6,6 +6,7 @@ import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' as dom; // Alias the html package's `Element`
+import 'package:kyb/navigation/navigation_bar.dart';
 
 class ScanPage extends StatefulWidget {
   const ScanPage({super.key});
@@ -84,42 +85,7 @@ class _ScanPageState extends State<ScanPage> {
         ),
       ),
       backgroundColor: const Color.fromRGBO(255, 220, 80, 1),
-      bottomNavigationBar: NavigationBar(
-        height: 60,
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          if (_currentIndex != index) {
-            // Only navigate if the index has changed
-            setState(() => _currentIndex = index);
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => pages[index]),
-            );
-          }
-        },
-        destinations: [
-          NavigationDestination(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.newspaper),
-            label: 'News',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.camera),
-            label: 'Scan',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.add_a_photo),
-            label: 'Contribute',
-          ),
-        ],
-      ),
+      bottomNavigationBar: NavigationControl(),
     );
   }
 }

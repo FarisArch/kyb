@@ -137,24 +137,40 @@ class _RegisterPageState extends State<RegisterPage> {
                       padding: const EdgeInsets.fromLTRB(240, 0, 0, 0),
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.pink, // Set the background color to pink
-                      ),
+                          backgroundColor: Colors.pink, // Set the background color to pink
+                        ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();
-                            // TODO: Handle form data
+                            // Handle form data here, then navigate
                             print('Full Name: $_fullName');
                             print('Email: $_email');
                             print('Password: $_password');
                             print('Confirm Password: $_confirmPassword');
+
+                            // Navigate to successful_register.dart
+                            Navigator.pushNamed(context, '/successfulRegister');
                           }
                         },
                         icon: Icon(Icons.login),
                         label: Text('Sign up'),
                       ),
                     ),
-                    SizedBox(height: 20),
-                    Text('Already have an account? Sign in'),
+                    const SizedBox(height: 20),
+                    GestureDetector(
+                      onTap: () {
+                        // Navigate to login.dart
+                        Navigator.pushNamed(context, '/login');
+                      },
+                      child: Text(
+                        'Already have an account? Sign in',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

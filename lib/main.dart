@@ -7,7 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 void main() {
   runFirebase();
   runApp(MaterialApp(
-    initialRoute: '/search',
+    initialRoute: '/login',
     routes: {
       '/': (context) => SplashScreen(),
       '/front': (context) => FrontPage(),
@@ -21,6 +21,7 @@ void main() {
       '/news': (context) => NewsPage(),
       '/scan': (context) => ScanPage(),
       '/search': (context) => SearchPage(),
+      '/contribute': (context) => ContributePage(),
     },
   ));
 }

@@ -12,3 +12,4 @@ export 'package:kyb/pages/news.dart';
 export 'package:kyb/pages/news_card.dart';
 export 'package:kyb/pages/scan.dart';
 export 'package:kyb/pages/search.dart';
+export 'package:kyb/pages/contribute.dart';

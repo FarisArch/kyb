@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:kyb/pages/pages.dart'; // PUT ALL PAGES IN PAGES.DART
 import 'package:firebase_core/firebase_core.dart';
+import 'package:kyb/services/api_key.dart';
 
 void main() {
   runFirebase();
@@ -13,8 +14,6 @@ void main() {
       '/front': (context) => FrontPage(),
       '/login': (context) => LoginPage(),
       '/register': (context) => RegisterPage(),
-      '/successfulLogin': (context) => SuccessfulLogin(),
-      '/successfulRegister': (context) => SuccessfulRegister(),
       '/successfulContribute': (context) => SuccessfulContribute(),
       '/successfulReport': (context) => SuccessfulReport(),
       '/home': (context) => Home(),
@@ -28,5 +27,5 @@ void main() {
 
 void runFirebase() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: FirebaseOptions(apiKey: firebase_api_key, appId: firebase_app_id, messagingSenderId: "138817668884", projectId: "know-your-business-fyp"));
 }

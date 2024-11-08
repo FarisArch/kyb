@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:kyb/services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -10,6 +11,16 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Container(
                   width: 350,
                   child: TextFormField(
+                    controller: _emailController, // Assign the controller here
                     decoration: InputDecoration(
                       hintText: 'Username',
                       hintStyle: TextStyle(color: Color.fromRGBO(255, 220, 80, 1)),
@@ -58,6 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Container(
                   width: 350,
                   child: TextFormField(
+                    controller: _passwordController, // Assign the controller here
                     obscureText: true,
                     maxLines: 1,
                     decoration: InputDecoration(
@@ -88,9 +101,12 @@ class _LoginPageState extends State<LoginPage> {
                   height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.pink),
-                    onPressed: () {
-                      // Navigate to successful_login.dart
-                      Navigator.pushNamed(context, '/successfulLogin');
+                    onPressed: () async {
+                      AuthenticationService().login(
+                        email: _emailController.text, // Use the controller's text here
+                        password: _passwordController.text, // Use the controller's text here
+                        context: context,
+                      );
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

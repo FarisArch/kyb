@@ -17,7 +17,6 @@ class ScanPage extends StatefulWidget {
 
 class _ScanPageState extends State<ScanPage> {
   String _scanResult = '';
-  int _currentIndex = 2;
 
   final pages = [
     Home(),

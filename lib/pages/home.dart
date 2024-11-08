@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:kyb/navigation/navigation_bar.dart';
 import 'package:kyb/pages/pages.dart';
 
@@ -27,11 +26,11 @@ class _HomeState extends State<Home> {
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.white,
                 ),
+                padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
                 child: Text(
                   'Support Local-la!',
                   style: TextStyle(color: Color.fromRGBO(255, 220, 80, 1), fontSize: 25, fontWeight: FontWeight.bold),
                 ),
-                padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
               ),
             ),
             SizedBox(height: 5),
@@ -127,11 +126,11 @@ class _HomeState extends State<Home> {
               children: [
                 Container(
                   decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.white),
+                  padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
                   child: Text(
                     'Flash news',
                     style: TextStyle(color: Color.fromRGBO(255, 220, 80, 1), fontSize: 25, fontWeight: FontWeight.bold),
                   ),
-                  padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
                 ),
                 Container(
                   height: 140,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kyb/services/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -12,7 +13,6 @@ class _RegisterPageState extends State<RegisterPage> {
   String _fullName = '';
   String _email = '';
   String _password = '';
-  String _confirmPassword = '';
 
   @override
   Widget build(BuildContext context) {
@@ -107,49 +107,22 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Center(
-                      child: Container(
-                        width: 350,
-                        child: TextFormField(
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            hintText: 'Confirm Password',
-                            hintStyle: TextStyle(color: Color.fromRGBO(255, 220, 80, 1)),
-                            prefixIcon: Icon(Icons.lock),
-                            filled: true,
-                            fillColor: Colors.white,
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please confirm your password';
-                            }
-                            if (value != _password) {
-                              return 'Passwords do not match';
-                            }
-                            return null;
-                          },
-                          onSaved: (value) => _confirmPassword = value!,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(240, 0, 0, 0),
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.pink, // Set the background color to pink
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             _formKey.currentState!.save();
                             // Handle form data here, then navigate
-                            print('Full Name: $_fullName');
-                            print('Email: $_email');
-                            print('Password: $_password');
-                            print('Confirm Password: $_confirmPassword');
-
-                            // Navigate to successful_register.dart
-                            Navigator.pushNamed(context, '/successfulRegister');
+                            await AuthenticationService().register(
+                              name: _fullName,
+                              email: _email,
+                              password: _password,
+                              context: context,
+                            );
                           }
                         },
                         icon: Icon(Icons.login),

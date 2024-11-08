@@ -31,6 +31,10 @@ migrate_working_dir/
 .pub/
 /build/
 
+# Sensitive files
+/lib/services/api_key.dart
+/android/app/google-services.json
+
 # Symbolication related
 app.*.symbols
 
@@ -41,3 +45,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+windows/flutter/generated_plugins.cmake
+windows/flutter/generated_plugin_registrant.cc
+macos/Flutter/GeneratedPluginRegistrant.swift

@@ -62,7 +62,7 @@ class ReportPage extends StatelessWidget {
               'Others',
               Colors.white,
                   () {
-                Navigator.pushNamed(context, '/report_others');
+                Navigator.pushNamed(context, '/report_misinfo');
               },
             ),
           ],

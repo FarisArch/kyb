@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kyb/pages/home.dart';
 
 class SuccessfulReport extends StatelessWidget {
   const SuccessfulReport ({super.key});
@@ -43,7 +44,7 @@ class SuccessfulReport extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => DashboardReport()),
+                  MaterialPageRoute(builder: (context) => Home()),
                 );
               },
               child: Text('Continue'),

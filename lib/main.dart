@@ -3,12 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:kyb/pages/pages.dart'; // PUT ALL PAGES IN PAGES.DART
 import 'package:firebase_core/firebase_core.dart';
+import 'package:kyb/pages/report_wrongclass.dart';
 import 'package:kyb/services/api_key.dart';
 
 void main() {
   runFirebase();
   runApp(MaterialApp(
-    initialRoute: '/login',
+    initialRoute: '/report',
     routes: {
       '/': (context) => SplashScreen(),
       '/front': (context) => FrontPage(),
@@ -21,6 +22,10 @@ void main() {
       '/scan': (context) => ScanPage(),
       '/search': (context) => SearchPage(),
       '/contribute': (context) => ContributePage(),
+      '/report': (context) => ReportPage(),
+      '/report_wrongcategory': (context) => ReportWrongCategory(),
+      '/report_wrongclass': (context) => ReportWrongClass(),
+      '/successful_report': (context) => SuccessfulReport(),
     },
   ));
 }

@@ -30,11 +30,12 @@ class _FrontPageState extends State<FrontPage> {
         Text(
           'Know Your Business',
           style: TextStyle(fontSize: 25, color: Colors.white, letterSpacing: 2.5),
-
         ),
         SizedBox(height: 40),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, '/login');
+          },
           style: ElevatedButton.styleFrom(
             foregroundColor: const Color.fromARGB(240, 255, 220, 80), // Set the text color to your specific yellow
             backgroundColor: Colors.white, // Set the button's background color
@@ -45,7 +46,9 @@ class _FrontPageState extends State<FrontPage> {
         ),
         SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, '/register');
+          },
           style: ElevatedButton.styleFrom(
             foregroundColor: const Color.fromARGB(240, 255, 220, 80), // Set the text color to your specific yellow
             backgroundColor: Colors.white, // Set the button's background color
@@ -56,7 +59,9 @@ class _FrontPageState extends State<FrontPage> {
         ),
         SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, '/home');
+          },
           style: ElevatedButton.styleFrom(
             foregroundColor: const Color.fromARGB(240, 255, 220, 80), // Set the text color to your specific yellow
             backgroundColor: Colors.white, // Set the button's background color

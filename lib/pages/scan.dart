@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' as dom; // Alias the html package's `Element`
 import 'package:kyb/navigation/navigation_bar.dart';
+import 'package:kyb/services/database_service_barcode.dart';
+import 'package:kyb/models/barcode.dart';
 
 class ScanPage extends StatefulWidget {
   const ScanPage({super.key});
@@ -62,7 +64,18 @@ class _ScanPageState extends State<ScanPage> {
         // Check and retrieve Category name
         if (categoryElement != null && categoryElement.querySelectorAll('td').length > 1) {
           final categoryName = categoryElement.querySelectorAll('td')[1]?.text.trim() ?? 'N/A'; // Get the value in the next <td>
+          final brandName = '';
           print('Category: $categoryName');
+
+          // Add barcode and category to database
+// Add barcode and category to database
+          final DatabaseServiceBarcode databaseServiceBarcode = DatabaseServiceBarcode();
+          final Barcode barcode = Barcode(
+            barcodeNum: _scanResult,
+            companyName: brandName,
+            category: categoryName,
+          );
+          databaseServiceBarcode.addBarcode(barcode);
         } else {
           print('Category not found');
         }

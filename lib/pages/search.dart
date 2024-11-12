@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:kyb/pages/pages.dart';
+import 'package:kyb/navigation/navigation_bar.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -11,36 +12,10 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  int _currentIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: NavigationBar(
-        height: 60,
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (index) {
-          if (index == 0) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Home()),
-            );
-          } else if (index == 1) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => NewsPage()),
-            );
-          }
-          setState(() => _currentIndex = index);
-        },
-        destinations: [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.newspaper), label: 'News'),
-          NavigationDestination(icon: Icon(Icons.camera), label: 'Scan'),
-          NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
-          NavigationDestination(icon: Icon(Icons.add_a_photo), label: 'Contribute'),
-        ],
-      ),
+      bottomNavigationBar: NavigationControl(),
       backgroundColor: Color.fromRGBO(255, 220, 80, 1),
       appBar: AppBar(
         title: Text("Search & Category"),

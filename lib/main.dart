@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:kyb/pages/pages.dart'; // PUT ALL PAGES IN PAGES.DART
 import 'package:firebase_core/firebase_core.dart';
 import 'package:kyb/services/api_key.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
-  runFirebase();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: FirebaseOptions(apiKey: firebase_api_key, appId: firebase_app_id, messagingSenderId: "138817668884", projectId: "know-your-business-fyp"));
+  FirebaseFirestore.instance.settings = Settings(persistenceEnabled: true);
   runApp(MaterialApp(
-    initialRoute: '/successfulContribute',
+    initialRoute: '/front',
     routes: {
       '/': (context) => SplashScreen(),
       '/front': (context) => FrontPage(),
@@ -25,12 +28,6 @@ void main() {
       '/report_wrongcategory': (context) => ReportWrongCategory(),
       '/report_wrongclass': (context) => ReportWrongClass(),
       '/report_misinfo': (context) => ReportWrongInfo(),
-
     },
   ));
-}
-
-void runFirebase() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: FirebaseOptions(apiKey: firebase_api_key, appId: firebase_app_id, messagingSenderId: "138817668884", projectId: "know-your-business-fyp"));
 }

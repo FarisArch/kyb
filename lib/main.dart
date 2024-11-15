@@ -11,7 +11,7 @@ void main() async {
   await Firebase.initializeApp(options: FirebaseOptions(apiKey: firebase_api_key, appId: firebase_app_id, messagingSenderId: "138817668884", projectId: "know-your-business-fyp"));
   FirebaseFirestore.instance.settings = Settings(persistenceEnabled: true);
   runApp(MaterialApp(
-    initialRoute: '/front',
+    initialRoute: '/result',
     routes: {
       '/': (context) => SplashScreen(),
       '/front': (context) => FrontPage(),
@@ -28,6 +28,17 @@ void main() async {
       '/report_wrongcategory': (context) => ReportWrongCategory(),
       '/report_wrongclass': (context) => ReportWrongClass(),
       '/report_misinfo': (context) => ReportWrongInfo(),
+      '/result': (context) => ResultPage(isBoycotted: true),
     },
   ));
 }
+
+// Main page or scanner page example
+/*void navigateToResult(BuildContext context, bool isBoycotted) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ResultPage(isBoycotted: isBoycotted),
+    ),
+  );
+}*/

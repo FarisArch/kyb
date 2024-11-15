@@ -15,4 +15,5 @@ export 'package:kyb/pages/report.dart';
 export 'package:kyb/pages/report_wrongcategory.dart';
 export 'package:kyb/pages/report_misinfo.dart';
 export 'package:kyb/pages/report_wrongclass.dart';
+export 'package:kyb/pages/result.dart';
 

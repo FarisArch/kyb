@@ -11,7 +11,7 @@ void main() async {
   await Firebase.initializeApp(options: FirebaseOptions(apiKey: firebase_api_key, appId: firebase_app_id, messagingSenderId: "138817668884", projectId: "know-your-business-fyp"));
   FirebaseFirestore.instance.settings = Settings(persistenceEnabled: true);
   runApp(MaterialApp(
-    initialRoute: '/result',
+    initialRoute: '/home',
     routes: {
       '/': (context) => SplashScreen(),
       '/front': (context) => FrontPage(),

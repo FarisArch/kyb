@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:kyb/models/article.dart';
 
 class NewsCard extends StatelessWidget {
+  final Article article;
+
+  NewsCard({required this.article});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -13,7 +18,7 @@ class NewsCard extends StatelessWidget {
         children: [
           // Title
           Text(
-            "Israel’s raids on Jenin only fuel Palestinian resistance",
+            article.title,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -23,7 +28,7 @@ class NewsCard extends StatelessWidget {
 
           // Subtitle
           Text(
-            "Aljazeera News",
+            article.description,
             style: TextStyle(
               color: Color.fromRGBO(255, 220, 80, 1),
               fontSize: 16,
@@ -31,7 +36,7 @@ class NewsCard extends StatelessWidget {
             ),
           ),
           Text(
-            "2 June 2024",
+            article.publishedAt,
             style: TextStyle(
               fontSize: 12,
               color: Colors.grey,
@@ -44,8 +49,8 @@ class NewsCard extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Image.asset(
-                    'assets/1.jpg', // Replace with your image URL
+                  child: Image.network(
+                    article.urlToImage,
                     fit: BoxFit.cover,
                   ),
                 ),

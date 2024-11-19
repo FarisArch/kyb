@@ -65,10 +65,16 @@ class _NewsPageState extends State<NewsPage> {
               child: _isLoading
                   ? Center(child: CircularProgressIndicator()) // Display a loading indicator while data is being loaded
                   : ListView.builder(
-                      itemCount: _articles.length, // Build one item for each article
+                      itemCount: _articles.length > 2 ? 2 : _articles.length, // Only build 2 items or less if there are less than 2 items
                       itemBuilder: (context, index) {
                         final article = _articles[index]; // Access the corresponding article in the list
-                        return NewsCard(article: article); // Pass the article data to the NewsCard widget
+                        return Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                          child: NewsCard(
+                            article: article,
+                            backgroundColor: Colors.white,
+                          ),
+                        ); // Pass the article data to the NewsCard widget
                       },
                     ),
             ),

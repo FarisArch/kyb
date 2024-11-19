@@ -42,7 +42,7 @@ class Article {
   }
 
   static Future<List<Article>> fetchArticles(String category) async {
-    final response = await http.get(Uri.parse('https://newsapi.org/v2/everything?q=$category&from=2024-11-15&sortBy=popularity&apiKey=$news_api_key'));
+    final response = await http.get(Uri.parse('https://newsapi.org/v2/everything?q=$category&from=2024-11-15&sortBy=popularity&apiKey=$news_api_key&pageSize=2'));
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);

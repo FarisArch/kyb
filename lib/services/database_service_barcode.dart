@@ -1,30 +1,34 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kyb/models/barcode.dart';
 
-const String BARCODES_COLLECTION_REF = 'barcodes';
-
 class DatabaseServiceBarcode {
   final _firestore = FirebaseFirestore.instance;
+  final String BARCODES_COLLECTION_REF = 'barcodes';
 
   late final CollectionReference _barcodesRef;
+
   DatabaseServiceBarcode() {
-    _barcodesRef = _firestore.collection(BARCODES_COLLECTION_REF).withConverter<Barcode>(fromFirestore: (snapshot, _) => Barcode.fromJson(snapshot.data()!), toFirestore: (barcode, _) => barcode.toJson());
-  }
-  Stream<QuerySnapshot<Barcode>> getBarcodes() {
-    return _barcodesRef
-        .withConverter<Barcode>(
+    _barcodesRef = _firestore.collection(BARCODES_COLLECTION_REF).withConverter<Barcode>(
           fromFirestore: (snapshot, _) => Barcode.fromJson(snapshot.data()!),
           toFirestore: (barcode, _) => barcode.toJson(),
-        )
-        .snapshots();
+        );
   }
 
-  void addBarcode(Barcode barcode) async {
+  Future<bool> addBarcode(Barcode barcode) async {
     final QuerySnapshot querySnapshot = await _barcodesRef.where('barcodeNum', isEqualTo: barcode.barcodeNum).get();
+
     if (querySnapshot.docs.isEmpty) {
-      _barcodesRef.add(barcode);
+      // Add new barcode if it doesn't exist
+      await _barcodesRef.add(barcode);
+      return false; // Barcode was added
     } else {
-      print('Barcode already exists');
+      // Barcode already exists
+      return true; // Barcode exists, no changes made
     }
+  }
+
+  Future<bool> checkBarcodeExists(String barcode) async {
+    final QuerySnapshot querySnapshot = await _barcodesRef.where('barcodeNum', isEqualTo: barcode).get();
+    return querySnapshot.docs.isNotEmpty; // Returns true if barcode exists
   }
 }

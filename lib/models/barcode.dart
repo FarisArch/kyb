@@ -1,37 +1,54 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-
 class Barcode {
   String barcodeNum;
   String companyName;
   String category;
+  String? brandType; // Optional field
+  String? evidenceLink; // Optional field
+  bool? approved; // Optional field to indicate approval status
 
   Barcode({
     required this.barcodeNum,
     required this.companyName,
     required this.category,
+    this.brandType,
+    this.approved, // Default to null or assign a default value
   });
 
+  // Factory constructor to initialize from JSON
   Barcode.fromJson(Map<String, Object?> json)
       : this(
           barcodeNum: json['barcodeNum']! as String,
           companyName: json['companyName']! as String,
           category: json['category']! as String,
+          brandType: json['brandType'] as String?,
+          approved: json['approved'] as bool?,
         );
 
-  Barcode copyWith({
-    String? barcodeNum,
-    String? companyName,
-    String? category,
-  }) {
-    return Barcode(barcodeNum: barcodeNum ?? this.barcodeNum, companyName: companyName ?? this.companyName, category: category ?? this.category);
-  }
-
+  // Method to convert to JSON
   Map<String, Object?> toJson() {
     return {
       'barcodeNum': barcodeNum,
       'companyName': companyName,
       'category': category,
+      'brandType': brandType,
+      'approved': approved,
     };
+  }
+
+  // Method for creating a copy with updated fields
+  Barcode copyWith({
+    String? barcodeNum,
+    String? companyName,
+    String? category,
+    String? brandType,
+    bool? approved,
+  }) {
+    return Barcode(
+      barcodeNum: barcodeNum ?? this.barcodeNum,
+      companyName: companyName ?? this.companyName,
+      category: category ?? this.category,
+      brandType: brandType ?? this.brandType,
+      approved: approved ?? this.approved,
+    );
   }
 }

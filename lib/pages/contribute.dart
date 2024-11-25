@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kyb/models/contribute_barcode.dart';
+import 'package:kyb/services/database_service_barcode.dart'; // Use the barcode service for saving to the 'barcodes' collection
 
 class ContributePage extends StatefulWidget {
   @override
@@ -29,6 +31,49 @@ class _ContributePageState extends State<ContributePage> {
     'Unethical Brand',
     'Alternative Brand',
   ];
+
+  final DatabaseServiceBarcode _databaseService = DatabaseServiceBarcode();
+
+  void _submitContributeBarcode() async {
+    final brandName = _brandNameController.text.trim();
+    final barcode = _barcodeController.text.trim();
+    final evidenceLink = _evidenceLinkController.text.trim();
+
+    if (brandName.isEmpty || barcode.isEmpty || evidenceLink.isEmpty || _selectedCategory == null || _selectedBrandType == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill out all fields')),
+      );
+      return;
+    }
+
+    final contributeBarcode = ContributeBarcode(
+      barcodeNum: barcode,
+      companyName: brandName,
+      category: _selectedCategory!,
+      brandType: _selectedBrandType!,
+      link: evidenceLink,
+    );
+
+    // Check if the barcode already exists
+    bool barcodeExists = await _databaseService.checkBarcodeExists(barcode);
+
+    if (barcodeExists) {
+      // If barcode exists, show snackbar and navigate to /home
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Product already exists!')),
+      );
+      Navigator.pushNamed(context, '/home'); // Redirect to /home
+    } else {
+      // If barcode doesn't exist, save the barcode in the 'barcodes' collection
+      await _databaseService.addBarcode(contributeBarcode);
+
+      // Show success message and navigate to successful contribution page
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Contribution submitted successfully')),
+      );
+      Navigator.pushNamed(context, '/successfulContribute');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,12 +206,7 @@ class _ContributePageState extends State<ContributePage> {
 
               // Submit Button
               ElevatedButton(
-                onPressed: () {
-                  // Handle submission logic here
-                  print('Submitted: ${_brandNameController.text}');
-
-                  Navigator.pushNamed(context, '/successfulContribute');
-                },
+                onPressed: _submitContributeBarcode,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),

@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:kyb/services/auth_service.dart';
 
+import '../auth/forgot_pass.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -89,9 +91,29 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(200, 10, 0, 0),
-                child: Text('Forgot your password?'),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ForgotPassword()),
+                      );
+                    },
+                    child: const Text(
+                      "Forgot Password?",
+                      style: TextStyle(
+                        color: Colors.white, // Match text color to the rest of the theme
+                        fontSize: 16, // Adjust font size for better readability
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 15), // Add padding to prevent it from sticking to the edge
+                ],
               ),
               SizedBox(height: 30),
               Padding(

@@ -49,7 +49,7 @@ class NewsCard extends StatelessWidget {
           ),
           SizedBox(height: 8.0),
 
-          // Image section
+// Image section
           Expanded(
             child: Align(
               alignment: Alignment.center,
@@ -58,9 +58,12 @@ class NewsCard extends StatelessWidget {
                 height: 150, // Set the height of the image to 150
                 width: 250, // Set the width of the image to 250
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Text('No Image');
+                },
               ),
             ),
-          ),
+          )
         ],
       ),
     );

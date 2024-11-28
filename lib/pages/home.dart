@@ -121,8 +121,8 @@ class _HomeState extends State<Home> {
                 )
               ]),
             ]),
+// NEWS PAGE COLUMN
             Column(
-              // NEWS PAGE COLUMN
               children: [
                 Container(
                   decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Colors.white),
@@ -132,16 +132,29 @@ class _HomeState extends State<Home> {
                     style: TextStyle(color: Color.fromRGBO(255, 220, 80, 1), fontSize: 25, fontWeight: FontWeight.bold),
                   ),
                 ),
-                Container(
-                  height: 140,
-                  width: 200,
-                  child: TextButton(
-                      onPressed: () {
-                        print('News was clicked');
-                      },
-                      child: Image.asset('assets/1.jpg')),
+                FutureBuilder(
+                  future: Article.fetchArticles('general'), // fetch general news
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final articles = snapshot.data;
+                      return Column(
+                        children: articles != null
+                            ? [
+                                SizedBox(
+                                  height: 233, // adjust this value to fit your needs
+                                  child: NewsCard(
+                                    article: articles.first,
+                                    backgroundColor: Colors.white,
+                                  ),
+                                )
+                              ]
+                            : [],
+                      );
+                    } else {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  },
                 ),
-                Center(child: Container(height: 50, width: 350, color: Colors.white, child: Text('These cases are perfectly simple and easy to distinguish.')))
               ],
             ),
           ],

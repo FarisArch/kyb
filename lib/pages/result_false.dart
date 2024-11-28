@@ -1,73 +1,99 @@
 import 'package:flutter/material.dart';
-import 'package:kyb/pages/pages.dart';
 
 class ResultFalsePage extends StatelessWidget {
+  final String companyName;
+  final String brandType;
+  final String category;
+  final String link;
+
+  const ResultFalsePage({
+    super.key,
+    required this.companyName,
+    required this.brandType,
+    required this.category,
+    required this.link,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green[100],
       appBar: AppBar(
         backgroundColor: Colors.green,
-        title: Text('Marrybrown'),
+        title: Text(companyName), // Dynamic title using companyName
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/marrybrown.png', height: 100),
-            SizedBox(height: 20),
+            Image.asset('assets/marrybrown.png', height: 100), // Replace with appropriate image for each brand
+            const SizedBox(height: 20),
             Text(
-              'Product is safe!',
+              '$companyName is safe!',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.green[700],
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Expanded(
               child: Container(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
-                  color: Colors.white, // Background color of the box
-                  borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12.0),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black26,
                       blurRadius: 8,
-                      offset: Offset(0, 4),
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
                 child: SingleChildScrollView(
                   child: Text(
-                    "Marrybrown's support for Palestine is evidenced by their public statements and actions, aligning with local sentiments and utilizing locally sourced ingredients in their products.",
+                    "$companyName is categorized under $category. Brand type: $brandType.\n\nEvidence: $link",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // Action for viewing proof
-                  },
-                  child: Text('View proof'),
-                ),
-                SizedBox(width: 10), // Space between the buttons
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ReportPage()),
+                    // Add action for viewing proof (e.g., open a URL or show more details)
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Proof for $companyName'),
+                          content: Text('Proof link: $link'),
+                          actions: [
+                            TextButton(
+                              child: Text('OK'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
                     );
                   },
-                  child: Text('Report'),
+                  child: const Text('View proof'),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Navigate back to the previous page
+                  },
+                  child: const Text('Report'),
                 ),
               ],
             ),

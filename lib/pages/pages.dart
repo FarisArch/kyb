@@ -16,4 +16,4 @@ export 'package:kyb/pages/report_wrongcategory.dart';
 export 'package:kyb/pages/report_misinfo.dart';
 export 'package:kyb/pages/report_wrongclass.dart';
 export 'package:kyb/pages/result.dart';
-
+export 'package:kyb/models/article.dart';

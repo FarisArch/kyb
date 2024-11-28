@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:kyb/services/api_key.dart';
+import 'dart:core';
 
 class Article {
   final String title;
@@ -42,7 +43,11 @@ class Article {
   }
 
   static Future<List<Article>> fetchArticles(String category) async {
-    final response = await http.get(Uri.parse('https://newsapi.org/v2/everything?q=$category&from=2024-11-15&sortBy=popularity&apiKey=$news_api_key&pageSize=2'));
+    final now = DateTime.now();
+    final yesterday = now.subtract(Duration(days: 1));
+    final formattedDate = '${yesterday.year}-${yesterday.month.toString().padLeft(2, '0')}-${yesterday.day.toString().padLeft(2, '0')}';
+
+    final response = await http.get(Uri.parse('https://newsapi.org/v2/everything?q=$category&from=$formattedDate&sortBy=popularity&apiKey=$news_api_key&pageSize=2'));
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);

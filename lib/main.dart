@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:kyb/pages/pages.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -39,7 +41,6 @@ void main() async {
         '/report_wrongcategory': (context) => ReportWrongCategory(),
         '/report_wrongclass': (context) => ReportWrongClass(),
         '/report_misinfo': (context) => ReportWrongInfo(),
-        '/result': (context) => ResultPage(isBoycotted: true),
       },
     ),
   );

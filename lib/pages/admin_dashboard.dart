@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ReportPage extends StatelessWidget {
-  const ReportPage({super.key});
+class AdminDashboardPage extends StatelessWidget {
+  const AdminDashboardPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +24,9 @@ class ReportPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              'Report this brand',
+              'Welcome to Admin Dashboard',
               style: TextStyle(
-                fontSize: 24,
+                fontSize: 26,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
@@ -34,37 +34,28 @@ class ReportPage extends StatelessWidget {
             SizedBox(height: 30),
             _buildReportButton(
               context,
-              'Product is in wrong category',
+              'Add a new brand',
               Colors.white,
                   () {
-                Navigator.pushNamed(context, '/report_wrongcategory');
+                Navigator.pushNamed(context, '/admin_new_brand');
               },
             ),
             SizedBox(height: 10),
             _buildReportButton(
               context,
-              'Product is in wrong classification',
+              'Update existing brand information',
               Colors.white,
                   () {
-                Navigator.pushNamed(context, '/report_wrongclass');
+                Navigator.pushNamed(context, '/admin_update_brand');
               },
             ),
             SizedBox(height: 10),
             _buildReportButton(
               context,
-              "There's misinformation about the product",
+              "View brands report",
               Colors.white,
                   () {
-                Navigator.pushNamed(context, '/report_misinfo');
-              },
-            ),
-            SizedBox(height: 10),
-            _buildReportButton(
-              context,
-              'Others',
-              Colors.white,
-                  () {
-                Navigator.pushNamed(context, '/report_misinfo');
+                Navigator.pushNamed(context, '/admin_brands_report');
               },
             ),
           ],
@@ -76,7 +67,7 @@ class ReportPage extends StatelessWidget {
   Widget _buildReportButton(
       BuildContext context, String text, Color color, VoidCallback onPressed) {
     return SizedBox(
-      width: double.infinity, // Make buttons take the full width
+      width: double.infinity, // Makes the button take full width
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(

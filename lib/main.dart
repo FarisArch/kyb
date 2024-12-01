@@ -25,7 +25,7 @@ void main() async {
 
   runApp(
     MaterialApp(
-      initialRoute: '/report',
+      initialRoute: '/contribute',
       routes: {
         '/': (context) => SplashScreen(),
         '/front': (context) => FrontPage(),
@@ -43,6 +43,7 @@ void main() async {
         '/report_wrongclass': (context) => ReportWrongClass(),
         '/report_misinfo': (context) => ReportWrongInfo(),
         '/admin_dashboard': (context) => AdminDashboardPage(),
+        '/admin_new_brand': (context) => AdminContributePage(),
       },
     ),
   );

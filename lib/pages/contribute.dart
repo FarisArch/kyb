@@ -28,8 +28,8 @@ class _ContributePageState extends State<ContributePage> {
   ];
 
   final List<String> _brandTypes = [
-    'Unethical Brand',
-    'Alternative Brand',
+    'Recommended Brand',
+    'Non-Recommended Brand',
   ];
 
   final DatabaseServiceBarcode _databaseService = DatabaseServiceBarcode();
@@ -51,7 +51,7 @@ class _ContributePageState extends State<ContributePage> {
       companyName: brandName,
       category: _selectedCategory!,
       brandType: _selectedBrandType!,
-      link: evidenceLink,
+      link: evidenceLink, approved: false,
     );
 
     // Check if the barcode already exists
@@ -95,7 +95,7 @@ class _ContributePageState extends State<ContributePage> {
               ),
               SizedBox(height: 8),
               Text(
-                'Suggest an unethical brand or an alternative!',
+                'Suggest an alternative brand or a non-recommended brand!',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.white70,

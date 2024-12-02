@@ -14,10 +14,9 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   bool _isLoading = false;
-  List<String> _suggestions = []; // List to hold autocomplete suggestions
+  List<String> _suggestions = [];
   final CollectionReference barcodesCollection = FirebaseFirestore.instance.collection('barcodes');
 
-  // Modified _searchDatabase to update suggestions without redirection
   void _searchDatabase(String query) async {
     if (query.isEmpty) {
       setState(() {
@@ -31,11 +30,7 @@ class _SearchPageState extends State<SearchPage> {
     });
 
     try {
-      final QuerySnapshot result = await barcodesCollection
-          .where('companyName', isGreaterThanOrEqualTo: query)
-          .where('companyName', isLessThanOrEqualTo: query + '\uf8ff')
-          .limit(5) // Limiting the number of suggestions for performance
-          .get();
+      final QuerySnapshot result = await barcodesCollection.where('companyName', isGreaterThanOrEqualTo: query).where('companyName', isLessThanOrEqualTo: query + '\uf8ff').limit(5).get();
 
       setState(() {
         _suggestions = result.docs.map((doc) => (doc.data() as Map<String, dynamic>)['companyName'] as String).toList();
@@ -77,7 +72,6 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  // Perform redirection when the user selects a suggestion
   void _redirectToDetails(String selectedCompany) async {
     try {
       final result = await barcodesCollection.where('companyName', isEqualTo: selectedCompany).get();
@@ -90,9 +84,8 @@ class _SearchPageState extends State<SearchPage> {
         final category = product['category'];
         final link = product['link'];
 
-        // Logic for redirecting based on brandType and approved status
         if (approved == true) {
-          if (brandType == "Unethical Brand") {
+          if (brandType == "Non-Recommended Brand") {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -104,7 +97,7 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             );
-          } else if (brandType == "Alternative Brand") {
+          } else if (brandType == "Recommended Brand") {
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -165,23 +158,23 @@ class _SearchPageState extends State<SearchPage> {
             if (_suggestions.isNotEmpty)
               Expanded(
                 child: Container(
-                  color: Colors.white, // Set background color for the entire list
+                  color: Colors.white,
                   child: ListView.builder(
                     itemCount: _suggestions.length,
                     itemBuilder: (context, index) {
                       return Container(
-                        color: Colors.white, // White background for each suggestion
-                        margin: const EdgeInsets.symmetric(vertical: 4.0), // Add margin for spacing between items
+                        color: Colors.white,
+                        margin: const EdgeInsets.symmetric(vertical: 4.0),
                         child: ListTile(
                           title: Text(
                             _suggestions[index],
                             style: TextStyle(
-                              color: Colors.black, // Text color for each suggestion
+                              color: Colors.black,
                             ),
                           ),
                           onTap: () {
                             _searchController.text = _suggestions[index];
-                            _redirectToDetails(_suggestions[index]); // Perform redirection
+                            _redirectToDetails(_suggestions[index]);
                           },
                         ),
                       );
@@ -216,27 +209,27 @@ class _SearchPageState extends State<SearchPage> {
       onTap: () => _checkCategory(label),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white, // Background color of each tile
-          borderRadius: BorderRadius.circular(10), // Rounded corners
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1), // Shadow color
+              color: Colors.black.withOpacity(0.1),
               spreadRadius: 2,
               blurRadius: 5,
-              offset: const Offset(0, 3), // Shadow position
+              offset: const Offset(0, 3),
             ),
           ],
         ),
-        margin: const EdgeInsets.all(8), // Space around each tile
-        padding: const EdgeInsets.all(16), // Space inside the tile
+        margin: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 40, color: Colors.black), // Icon color
+            Icon(icon, size: 40, color: Colors.black),
             const SizedBox(height: 8),
             Text(
               label,
-              style: const TextStyle(color: Colors.black), // Text color
+              style: const TextStyle(color: Colors.black),
             ),
           ],
         ),

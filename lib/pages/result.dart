@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'result_false.dart';
 import 'result_true.dart';
+import 'package:kyb/pages/pages.dart';
 
 class ResultPage extends StatelessWidget {
   final bool isBoycotted; // Determines which page to show

@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart'; // Import url_launcher
 
 class ResultFalsePage extends StatelessWidget {
   final String companyName;
@@ -116,15 +115,7 @@ class ResultFalsePage extends StatelessWidget {
                   TextSpan(
                     text: 'Logo.dev',
                     style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () async {
-                        final Uri url = Uri.parse('https://logo.dev'); // TODO: FIX THIS NOT WORKING not important
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(url, mode: LaunchMode.externalApplication);
-                        } else {
-                          print('Could not launch $url');
-                        }
-                      },
+                    recognizer: TapGestureRecognizer()..onTap = () async {},
                   ),
                 ],
               ),

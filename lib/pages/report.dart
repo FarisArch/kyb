@@ -50,7 +50,7 @@ class ReportPage extends StatelessWidget {
               },
             ),
             SizedBox(height: 10),
-            _buildReportButton(
+            /*_buildReportButton(
               context,
               "There's misinformation about the product",
               Colors.white,
@@ -66,7 +66,7 @@ class ReportPage extends StatelessWidget {
                   () {
                 Navigator.pushNamed(context, '/report_misinfo');
               },
-            ),
+            ),*/
           ],
         ),
       ),

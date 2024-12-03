@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firebase Firestore
 
 class ReportWrongClass extends StatefulWidget {
+  final String barcodeNum; // Accept barcodeNum from the result page
+
+  ReportWrongClass({required this.barcodeNum});
+
   @override
   _ReportWrongClassState createState() => _ReportWrongClassState();
 }
@@ -9,16 +14,31 @@ class _ReportWrongClassState extends State<ReportWrongClass> {
   String? selectedCategory;
   final TextEditingController linkController = TextEditingController();
 
-  // Define the list of categories
+  // Define the list of ethical classifications
   final List<String> categories = [
     'Product should be unsafe & unethical',
     'Product should be safe and ethical',
   ];
 
-  void _submitForm() {
-    // Check if category and link are not empty
+  // Submit the form and save data to Firebase
+  Future<void> _submitForm() async {
     if (selectedCategory != null && linkController.text.isNotEmpty) {
-      Navigator.pushNamed(context, '/successful_report');
+      try {
+        await FirebaseFirestore.instance.collection('report_list').add({
+          'barcodeNum': widget.barcodeNum, // Save the barcode number
+          'brandType': selectedCategory,   // Save the selected ethical classification
+          'link': linkController.text,    // Save the evidence link
+          'timestamp': FieldValue.serverTimestamp(), // Save the submission time
+        });
+
+        // Navigate to a success page after successful submission
+        Navigator.pushNamed(context, '/successfulReport');
+      } catch (error) {
+        // Show an error message if submission fails
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error submitting report: $error')),
+        );
+      }
     } else {
       // Show an error message if any field is empty
       ScaffoldMessenger.of(context).showSnackBar(
@@ -53,7 +73,7 @@ class _ReportWrongClassState extends State<ReportWrongClass> {
               ),
             ),
             SizedBox(height: 40),
-            // Dropdown for Category selection
+            // Dropdown for Ethical Classification selection
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
                 labelText: 'ETHICAL CLASSIFICATION',

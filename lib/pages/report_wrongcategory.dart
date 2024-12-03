@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firebase Firestore
 
 class ReportWrongCategory extends StatefulWidget {
+  final String barcodeNum; // Accept barcodeNum from the result page
+
+  ReportWrongCategory({required this.barcodeNum});
+
   @override
   _ReportWrongCategoryState createState() => _ReportWrongCategoryState();
 }
@@ -22,10 +27,25 @@ class _ReportWrongCategoryState extends State<ReportWrongCategory> {
     'Entertainment',
   ];
 
-  void _submitForm() {
-    // Check if category and link are not empty
+  // Submit the form and save data to Firebase
+  Future<void> _submitForm() async {
     if (selectedCategory != null && linkController.text.isNotEmpty) {
-      Navigator.pushNamed(context, '/successful_report');
+      try {
+        await FirebaseFirestore.instance.collection('report_list').add({
+          'barcodeNum': widget.barcodeNum, // Save the barcode number
+          'category': selectedCategory,   // Save the selected category
+          'link': linkController.text,    // Save the evidence link
+          'timestamp': FieldValue.serverTimestamp(), // Save the submission time
+        });
+
+        // Navigate to a success page after successful submission
+        Navigator.pushNamed(context, '/successfulReport');
+      } catch (error) {
+        // Show an error message if submission fails
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error submitting report: $error')),
+        );
+      }
     } else {
       // Show an error message if any field is empty
       ScaffoldMessenger.of(context).showSnackBar(

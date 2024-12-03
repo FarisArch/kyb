@@ -25,7 +25,7 @@ void main() async {
 
   runApp(
     MaterialApp(
-      initialRoute: '/front',
+      initialRoute: '/report_wrongclass',
       routes: {
         '/': (context) => SplashScreen(),
         '/front': (context) => FrontPage(),
@@ -39,9 +39,9 @@ void main() async {
         '/search': (context) => SearchPage(),
         '/contribute': (context) => ContributePage(),
         '/report': (context) => ReportPage(),
-        '/report_wrongcategory': (context) => ReportWrongCategory(),
-        '/report_wrongclass': (context) => ReportWrongClass(),
-        '/report_misinfo': (context) => ReportWrongInfo(),
+        '/report_wrongcategory': (context) => ReportWrongCategory(barcodeNum: '',),
+        '/report_wrongclass': (context) => ReportWrongClass(barcodeNum: '',),
+        /*'/report_misinfo': (context) => ReportWrongInfo(),*/
         '/admin_dashboard': (context) => AdminDashboardPage(),
         '/admin_new_brand': (context) => AdminContributePage(),
       },

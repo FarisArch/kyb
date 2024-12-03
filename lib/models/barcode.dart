@@ -11,7 +11,8 @@ class Barcode {
     required this.companyName,
     required this.category,
     this.brandType,
-    this.approved, // Default to null or assign a default value
+    this.evidenceLink,
+    this.approved,
   });
 
   // Factory constructor to initialize from JSON
@@ -21,6 +22,7 @@ class Barcode {
           companyName: json['companyName']! as String,
           category: json['category']! as String,
           brandType: json['brandType'] as String?,
+          evidenceLink: json['evidenceLink'] as String?,
           approved: json['approved'] as bool?,
         );
 
@@ -31,6 +33,7 @@ class Barcode {
       'companyName': companyName,
       'category': category,
       'brandType': brandType,
+      'evidenceLink': evidenceLink,
       'approved': approved,
     };
   }
@@ -41,6 +44,7 @@ class Barcode {
     String? companyName,
     String? category,
     String? brandType,
+    String? evidenceLink,
     bool? approved,
   }) {
     return Barcode(
@@ -48,6 +52,7 @@ class Barcode {
       companyName: companyName ?? this.companyName,
       category: category ?? this.category,
       brandType: brandType ?? this.brandType,
+      evidenceLink: evidenceLink ?? this.evidenceLink,
       approved: approved ?? this.approved,
     );
   }

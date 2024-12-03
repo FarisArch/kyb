@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:kyb/pages/pages.dart'; // Import the necessary pages
+import 'package:url_launcher/url_launcher.dart'; // Import url_launcher
+import 'package:kyb/pages/pages.dart';
 
 class ResultTruePage extends StatelessWidget {
   final String companyName;
@@ -17,18 +19,27 @@ class ResultTruePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Generate logo URL based on company name
+    final String logoUrl = 'https://img.logo.dev/${companyName.toLowerCase().replaceAll(' ', '')}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
+
     return Scaffold(
       backgroundColor: Colors.red[100],
       appBar: AppBar(
         backgroundColor: Colors.red,
-        title: Text(companyName), // Use company name dynamically
+        title: Text(companyName),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/mcdonalds.jpg', height: 100), // You may want to use dynamic images for each brand
+            Image.network(
+              logoUrl,
+              height: 100,
+              errorBuilder: (context, error, stackTrace) {
+                return const Text('No logo available');
+              },
+            ),
             const SizedBox(height: 20),
             Text(
               '$companyName is boycotted!',
@@ -68,7 +79,6 @@ class ResultTruePage extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // Action for viewing proof
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -94,12 +104,34 @@ class ResultTruePage extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ReportPage()),
+                      MaterialPageRoute(builder: (context) => const ReportPage()),
                     );
                   },
                   child: const Text('Report'),
                 ),
               ],
+            ),
+            const SizedBox(height: 20),
+            RichText(
+              text: TextSpan(
+                text: 'Logos provided by ',
+                style: const TextStyle(color: Colors.black),
+                children: [
+                  TextSpan(
+                    text: 'Logo.dev',
+                    style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        final Uri url = Uri.parse('https://logo.dev'); // TODO: FIX THIS NOT WORKING not important
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url, mode: LaunchMode.externalApplication);
+                        } else {
+                          print('Could not launch $url');
+                        }
+                      },
+                  ),
+                ],
+              ),
             ),
           ],
         ),

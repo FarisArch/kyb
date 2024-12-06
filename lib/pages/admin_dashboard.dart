@@ -55,7 +55,7 @@ class AdminDashboardPage extends StatelessWidget {
               "View brands report",
               Colors.white,
                   () {
-                Navigator.pushNamed(context, '/admin_brands_report');
+                Navigator.pushNamed(context, '/admin_view_reports');
               },
             ),
           ],

@@ -30,7 +30,9 @@ class _SearchPageState extends State<SearchPage> {
     });
 
     try {
-      final QuerySnapshot result = await barcodesCollection.where('companyName', isGreaterThanOrEqualTo: query).where('companyName', isLessThanOrEqualTo: query + '\uf8ff').limit(5).get();
+      final normalizedQuery = query.toLowerCase(); // Convert query to lowercase
+
+      final QuerySnapshot result = await barcodesCollection.where('companyName', isGreaterThanOrEqualTo: normalizedQuery).where('companyName', isLessThanOrEqualTo: '$normalizedQuery\uf8ff').limit(5).get();
 
       setState(() {
         _suggestions = result.docs.map((doc) => (doc.data() as Map<String, dynamic>)['companyName'] as String).toList();
@@ -77,6 +79,7 @@ class _SearchPageState extends State<SearchPage> {
       final result = await barcodesCollection.where('companyName', isEqualTo: selectedCompany).get();
 
       if (result.docs.isNotEmpty) {
+        // Use the first matching document if there are duplicates
         final product = result.docs.first.data() as Map<String, dynamic>;
         final brandType = product['brandType'];
         final approved = product['approved'];

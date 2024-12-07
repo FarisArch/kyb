@@ -39,13 +39,17 @@ void main() async {
         '/search': (context) => SearchPage(),
         '/contribute': (context) => ContributePage(),
         '/report': (context) => ReportPage(),
-        '/report_wrongcategory': (context) => ReportWrongCategory(barcodeNum: '',),
-        '/report_wrongclass': (context) => ReportWrongClass(barcodeNum: '',),
+        '/report_wrongcategory': (context) => ReportWrongCategory(
+              barcodeNum: '',
+            ),
+        '/report_wrongclass': (context) => ReportWrongClass(
+              barcodeNum: '',
+            ),
         /*'/report_misinfo': (context) => ReportWrongInfo(),*/
         '/admin_dashboard': (context) => AdminDashboardPage(),
         '/admin_new_brand': (context) => AdminContributePage(),
         '/admin_view_reports': (context) => AdminBrandsReport(),
-        /*'/admin_update_brand': (context) => AdminBrandsReport(),*/
+        '/admin_update_brand': (context) => AdminBrandsUpdate(),
       },
     ),
   );

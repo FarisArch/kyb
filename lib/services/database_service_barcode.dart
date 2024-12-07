@@ -18,11 +18,20 @@ class DatabaseServiceBarcode {
     final QuerySnapshot querySnapshot = await _barcodesRef.where('barcodeNum', isEqualTo: barcode.barcodeNum).get();
 
     if (querySnapshot.docs.isEmpty) {
-      // Add new barcode if it doesn't exist
-      await _barcodesRef.add(barcode);
+      // Normalize data before adding to Firestore
+      final normalizedBarcode = Barcode(
+        barcodeNum: barcode.barcodeNum,
+        companyName: barcode.companyName,
+        category: barcode.category,
+      );
+
+      // Convert and add lowercase fields
+      final data = normalizedBarcode.toJson();
+      data['companyNameLowercase'] = barcode.companyName.toLowerCase(); // Add normalized field
+
+      await _barcodesRef.add(data);
       return false; // Barcode was added
     } else {
-      // Barcode already exists
       return true; // Barcode exists, no changes made
     }
   }

@@ -15,30 +15,31 @@ class Barcode {
     this.approved,
   });
 
-  // Factory constructor to initialize from JSON
-  Barcode.fromJson(Map<String, Object?> json)
-      : this(
-          barcodeNum: json['barcodeNum']! as String,
-          companyName: json['companyName']! as String,
-          category: json['category']! as String,
-          brandType: json['brandType'] as String?,
-          evidenceLink: json['evidenceLink'] as String?,
-          approved: json['approved'] as bool?,
-        );
+  /// Factory constructor to initialize from JSON
+  factory Barcode.fromJson(Map<String, Object?> json) {
+    return Barcode(
+      barcodeNum: (json['barcodeNum'] as String).trim(),
+      companyName: (json['companyName'] as String).trim(),
+      category: (json['category'] as String).trim(),
+      brandType: (json['brandType'] as String?)?.trim(),
+      evidenceLink: (json['evidenceLink'] as String?)?.trim(),
+      approved: json['approved'] as bool?,
+    );
+  }
 
-  // Method to convert to JSON
+  /// Method to convert to JSON
   Map<String, Object?> toJson() {
     return {
-      'barcodeNum': barcodeNum,
-      'companyName': companyName,
-      'category': category,
-      'brandType': brandType,
-      'evidenceLink': evidenceLink,
+      'barcodeNum': barcodeNum.trim(),
+      'companyName': companyName.trim().toLowerCase(), // Normalize to lowercase
+      'category': category.trim(),
+      'brandType': brandType?.trim(),
+      'evidenceLink': evidenceLink?.trim(),
       'approved': approved,
     };
   }
 
-  // Method for creating a copy with updated fields
+  /// Method for creating a copy with updated fields
   Barcode copyWith({
     String? barcodeNum,
     String? companyName,
@@ -49,10 +50,10 @@ class Barcode {
   }) {
     return Barcode(
       barcodeNum: barcodeNum ?? this.barcodeNum,
-      companyName: companyName ?? this.companyName,
-      category: category ?? this.category,
-      brandType: brandType ?? this.brandType,
-      evidenceLink: evidenceLink ?? this.evidenceLink,
+      companyName: companyName?.toLowerCase().trim() ?? this.companyName,
+      category: category?.trim() ?? this.category,
+      brandType: brandType?.trim() ?? this.brandType,
+      evidenceLink: evidenceLink?.trim() ?? this.evidenceLink,
       approved: approved ?? this.approved,
     );
   }

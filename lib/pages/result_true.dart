@@ -1,5 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firebase Firestore
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart'; // Import url_launcher
+import 'package:flutter/material.dart';
 import 'package:kyb/pages/pages.dart';
 
 class ResultTruePage extends StatelessWidget {
@@ -15,6 +16,17 @@ class ResultTruePage extends StatelessWidget {
     required this.category,
     required this.link,
   });
+
+  Future<List<Map<String, dynamic>>> fetchAlternativeBrands() async {
+    // Fetch alternative brands from Firestore where category and brandType match
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('brands') // Replace 'brands' with your Firestore collection name
+        .where('category', isEqualTo: category)
+        .where('brandType', isEqualTo: 'Recommended Brand')
+        .get();
+
+    return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +83,63 @@ class ResultTruePage extends StatelessWidget {
                   ),
                 ),
               ),
+            ),
+            const SizedBox(height: 20),
+            FutureBuilder<List<Map<String, dynamic>>>(
+              future: fetchAlternativeBrands(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                }
+                if (snapshot.hasError) {
+                  return const Text('Failed to load alternative brands.');
+                }
+
+                final alternativeBrands = snapshot.data ?? [];
+
+                if (alternativeBrands.isEmpty) {
+                  return const Text('No alternative brands available.');
+                }
+
+                return Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(12.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      const Text(
+                        'Recommended Alternatives:',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 10),
+                      ...alternativeBrands.map((brand) {
+                        return ListTile(
+                          leading: brand['logoUrl'] != null
+                              ? Image.network(
+                            brand['logoUrl'],
+                            width: 40,
+                            height: 40,
+                            errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.image_not_supported),
+                          )
+                              : const Icon(Icons.image),
+                          title: Text(brand['name'] ?? 'Unknown Brand'),
+                          subtitle: Text('Category: ${brand['category']}'),
+                        );
+                      }).toList(),
+                    ],
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 20),
             Row(

@@ -25,7 +25,7 @@ void main() async {
 
   runApp(
     MaterialApp(
-      initialRoute: '/admin_dashboard',
+      initialRoute: '/search',
       routes: {
         '/': (context) => SplashScreen(),
         '/front': (context) => FrontPage(),

@@ -18,14 +18,24 @@ class ResultTruePage extends StatelessWidget {
   });
 
   Future<List<Map<String, dynamic>>> fetchAlternativeBrands() async {
-    // Fetch alternative brands from Firestore where category and brandType match
-    final QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('brands') // Replace 'brands' with your Firestore collection name
-        .where('category', isEqualTo: category)
-        .where('brandType', isEqualTo: 'Recommended Brand')
-        .get();
+    try {
+      // Fetch alternative brands from the 'barcodes' collection
+      final QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('barcodes') // Updated collection name
+          .where('category', isEqualTo: category) // Match category
+          .where('brandType', isEqualTo: 'Recommended Brand') // Match brandType
+          .get();
 
-    return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+      final brands = snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+      if (brands.isEmpty) {
+        debugPrint('No brands found in barcodes collection for category: $category');
+      }
+      return brands;
+    } catch (e) {
+      debugPrint('Error fetching brands: $e');
+      return [];
+    }
   }
 
   @override
@@ -37,7 +47,6 @@ class ResultTruePage extends StatelessWidget {
       backgroundColor: Colors.red[100],
       appBar: AppBar(
         backgroundColor: Colors.red,
-        title: Text(companyName),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -84,7 +93,7 @@ class ResultTruePage extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             FutureBuilder<List<Map<String, dynamic>>>(
               future: fetchAlternativeBrands(),
               builder: (context, snapshot) {
@@ -118,24 +127,41 @@ class ResultTruePage extends StatelessWidget {
                     children: [
                       const Text(
                         'Recommended Alternatives:',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 10),
-                      ...alternativeBrands.map((brand) {
-                        return ListTile(
-                          leading: brand['logoUrl'] != null
-                              ? Image.network(
-                            brand['logoUrl'],
-                            width: 40,
-                            height: 40,
-                            errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.image_not_supported),
-                          )
-                              : const Icon(Icons.image),
-                          title: Text(brand['name'] ?? 'Unknown Brand'),
-                          subtitle: Text('Category: ${brand['category']}'),
-                        );
-                      }).toList(),
+                      const SizedBox(height: 5),
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio: 1.2, // Adjust to control the height
+                        ),
+                        itemCount: alternativeBrands.length,
+                        itemBuilder: (context, index) {
+                          final brand = alternativeBrands[index];
+                          return Column(
+                            children: [
+                              brand['logoUrl'] != null
+                                  ? Image.network(
+                                brand['logoUrl'],
+                                height: 30,
+                                errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.image_not_supported, size: 60),
+                              )
+                                  : const Icon(Icons.image, size: 60),
+                              const SizedBox(height: 5),
+                              Text(
+                                brand['companyName'] ?? 'Unknown',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
                     ],
                   ),
                 );

@@ -5,39 +5,41 @@ class DatabaseServiceBarcode {
   final _firestore = FirebaseFirestore.instance;
   final String BARCODES_COLLECTION_REF = 'barcodes';
 
-  late final CollectionReference _barcodesRef;
+  late final CollectionReference<Barcode> _barcodesRef;
 
   DatabaseServiceBarcode() {
+    // Initialize collection reference with Firestore converters
     _barcodesRef = _firestore.collection(BARCODES_COLLECTION_REF).withConverter<Barcode>(
           fromFirestore: (snapshot, _) => Barcode.fromJson(snapshot.data()!),
           toFirestore: (barcode, _) => barcode.toJson(),
         );
   }
 
+  /// Adds a barcode if it doesn't already exist
   Future<bool> addBarcode(Barcode barcode) async {
-    final QuerySnapshot querySnapshot = await _barcodesRef.where('barcodeNum', isEqualTo: barcode.barcodeNum).get();
+    try {
+      // Check if barcode exists
+      final querySnapshot = await _barcodesRef.where('barcodeNum', isEqualTo: barcode.barcodeNum).get();
 
-    if (querySnapshot.docs.isEmpty) {
-      // Normalize data before adding to Firestore
-      final normalizedBarcode = Barcode(
-        barcodeNum: barcode.barcodeNum,
-        companyName: barcode.companyName,
-        category: barcode.category,
-      );
-
-      // Convert and add lowercase fields
-      final data = normalizedBarcode.toJson();
-      data['companyNameLowercase'] = barcode.companyName.toLowerCase(); // Add normalized field
-
-      await _barcodesRef.add(data);
-      return false; // Barcode was added
-    } else {
-      return true; // Barcode exists, no changes made
+      if (querySnapshot.docs.isEmpty) {
+        // Add barcode to Firestore
+        await _barcodesRef.add(barcode);
+        return true; // Barcode successfully added
+      } else {
+        return false; // Barcode already exists
+      }
+    } catch (e) {
+      throw Exception('Error adding barcode: $e');
     }
   }
 
-  Future<bool> checkBarcodeExists(String barcode) async {
-    final QuerySnapshot querySnapshot = await _barcodesRef.where('barcodeNum', isEqualTo: barcode).get();
-    return querySnapshot.docs.isNotEmpty; // Returns true if barcode exists
+  /// Checks if a barcode already exists
+  Future<bool> checkBarcodeExists(String barcodeNum) async {
+    try {
+      final querySnapshot = await _barcodesRef.where('barcodeNum', isEqualTo: barcodeNum).get();
+      return querySnapshot.docs.isNotEmpty; // Return true if a matching document is found
+    } catch (e) {
+      throw Exception('Error checking barcode: $e');
+    }
   }
 }

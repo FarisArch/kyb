@@ -19,24 +19,33 @@ class Barcode {
   factory Barcode.fromJson(Map<String, Object?> json) {
     return Barcode(
       barcodeNum: (json['barcodeNum'] as String).trim(),
-      companyName: (json['companyName'] as String).trim(),
+      companyName: (json['companyName'] as String).trim().toLowerCase(), // Normalize to lowercase
       category: (json['category'] as String).trim(),
       brandType: (json['brandType'] as String?)?.trim(),
       evidenceLink: (json['evidenceLink'] as String?)?.trim(),
-      approved: json['approved'] as bool?,
+      approved: json['approved'] is bool ? json['approved'] as bool : null, // Ensure type safety
     );
   }
 
   /// Method to convert to JSON
   Map<String, Object?> toJson() {
-    return {
+    final Map<String, Object?> json = {
       'barcodeNum': barcodeNum.trim(),
-      'companyName': companyName.trim().toLowerCase(), // Normalize to lowercase
+      'companyName': companyName.trim().toLowerCase(),
       'category': category.trim(),
-      'brandType': brandType?.trim(),
-      'evidenceLink': evidenceLink?.trim(),
-      'approved': approved,
     };
+
+    if (brandType?.isNotEmpty ?? false) {
+      json['brandType'] = brandType?.trim();
+    }
+    if (evidenceLink?.isNotEmpty ?? false) {
+      json['evidenceLink'] = evidenceLink?.trim();
+    }
+    if (approved != null) {
+      json['approved'] = approved;
+    }
+
+    return json;
   }
 
   /// Method for creating a copy with updated fields
@@ -56,5 +65,10 @@ class Barcode {
       evidenceLink: evidenceLink?.trim() ?? this.evidenceLink,
       approved: approved ?? this.approved,
     );
+  }
+
+  /// Helper to check if the barcode data is valid
+  bool isValid() {
+    return barcodeNum.isNotEmpty && companyName.isNotEmpty && category.isNotEmpty;
   }
 }

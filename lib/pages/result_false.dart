@@ -15,6 +15,14 @@ class ResultFalsePage extends StatelessWidget {
     required this.link,
   });
 
+  String toTitleCase(String text) {
+    if (text.isEmpty) return text;
+    return text
+        .split(' ') // Split the text by spaces
+        .map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase()) // Capitalize each word
+        .join(' '); // Join them back with spaces
+  }
+
   @override
   Widget build(BuildContext context) {
     // Generate logo URL based on company name
@@ -40,7 +48,7 @@ class ResultFalsePage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              '$companyName is safe!',
+              '${toTitleCase(companyName)} is safe!',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -64,7 +72,7 @@ class ResultFalsePage extends StatelessWidget {
                 ),
                 child: SingleChildScrollView(
                   child: Text(
-                    "$companyName is categorized under $category. Brand type: $brandType.\n\nEvidence: $link",
+                    "${toTitleCase(companyName)} is categorized under ${toTitleCase(category)}. Brand type: ${toTitleCase(brandType)}.\n\nEvidence: $link",
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 16),
                   ),

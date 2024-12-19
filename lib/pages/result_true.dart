@@ -17,6 +17,14 @@ class ResultTruePage extends StatelessWidget {
     required this.link,
   });
 
+  String toTitleCase(String text) {
+    if (text.isEmpty) return text;
+    return text
+        .split(' ') // Split the text by spaces
+        .map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase()) // Capitalize each word
+        .join(' '); // Join them back with spaces
+  }
+
   Future<List<Map<String, dynamic>>> fetchAlternativeBrands() async {
     try {
       // Fetch alternative brands from the 'barcodes' collection
@@ -62,7 +70,7 @@ class ResultTruePage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              '$companyName is boycotted!',
+              '${toTitleCase(companyName)} is boycotted!',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -86,7 +94,7 @@ class ResultTruePage extends StatelessWidget {
                 ),
                 child: SingleChildScrollView(
                   child: Text(
-                    "Details about $companyName's boycott regarding $brandType in the $category category. Link for proof: $link",
+                    "Details about ${toTitleCase(companyName)}'s boycott regarding ${toTitleCase(brandType)} in the ${toTitleCase(category)} category. Link for proof: $link",
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 16),
                   ),
@@ -146,15 +154,14 @@ class ResultTruePage extends StatelessWidget {
                             children: [
                               brand['logoUrl'] != null
                                   ? Image.network(
-                                brand['logoUrl'],
-                                height: 30,
-                                errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.image_not_supported, size: 60),
-                              )
+                                      brand['logoUrl'],
+                                      height: 30,
+                                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.image_not_supported, size: 60),
+                                    )
                                   : const Icon(Icons.image, size: 60),
                               const SizedBox(height: 5),
                               Text(
-                                brand['companyName'] ?? 'Unknown',
+                                toTitleCase(brand['companyName'] ?? 'Unknown'),
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(fontSize: 14),
                               ),
@@ -177,7 +184,7 @@ class ResultTruePage extends StatelessWidget {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Proof for $companyName'),
+                          title: Text('Proof for ${toTitleCase(companyName)}'),
                           content: Text('Proof link: $link'),
                           actions: [
                             TextButton(

@@ -8,6 +8,7 @@ class EditBrandPage extends StatefulWidget {
   final String category;
   final String link;
   final bool? approved;
+  final String? logoUrl; // Added logoUrl field
 
   const EditBrandPage({
     super.key,
@@ -17,6 +18,7 @@ class EditBrandPage extends StatefulWidget {
     required this.category,
     required this.link,
     required this.approved,
+    this.logoUrl, // Optional logoUrl field
   });
 
   @override
@@ -26,6 +28,7 @@ class EditBrandPage extends StatefulWidget {
 class _EditBrandPageState extends State<EditBrandPage> {
   late TextEditingController _companyNameController;
   late TextEditingController _linkController;
+  late TextEditingController _logoUrlController; // Added TextEditingController for logoUrl
   bool? _approved;
   late String _selectedCategory;
   late String _selectedBrandType;
@@ -52,6 +55,7 @@ class _EditBrandPageState extends State<EditBrandPage> {
     super.initState();
     _companyNameController = TextEditingController(text: widget.companyName);
     _linkController = TextEditingController(text: widget.link);
+    _logoUrlController = TextEditingController(text: widget.logoUrl ?? ''); // Initialize with existing logoUrl or empty string
     _approved = widget.approved;
 
     // Validate category and brand type against available options
@@ -69,6 +73,7 @@ class _EditBrandPageState extends State<EditBrandPage> {
         'category': _selectedCategory.toLowerCase(),
         'link': _linkController.text,
         'approved': _approved,
+        'logoUrl': _logoUrlController.text, // Save the logoUrl
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -169,6 +174,20 @@ class _EditBrandPageState extends State<EditBrandPage> {
                 controller: _linkController,
                 decoration: InputDecoration(
                   labelText: 'Evidence Link',
+                  labelStyle: const TextStyle(color: Colors.black26),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                style: const TextStyle(color: Colors.black),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _logoUrlController, // Added TextField for logoUrl
+                decoration: InputDecoration(
+                  labelText: 'Logo URL (Optional)',
                   labelStyle: const TextStyle(color: Colors.black26),
                   filled: true,
                   fillColor: Colors.white,

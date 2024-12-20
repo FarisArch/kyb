@@ -45,6 +45,7 @@ dependencies:
   fluttertoast: ^8.2.8
   cloud_firestore: ^5.4.5
   dio: ^5.7.0
+  collection: ^1.18.0
 
 dev_dependencies:
   flutter_test:

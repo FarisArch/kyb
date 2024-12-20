@@ -3,13 +3,22 @@ import 'package:kyb/models/barcode.dart';
 import 'package:kyb/services/database_service_barcode.dart';
 
 class ContributePage extends StatefulWidget {
+  final String? prefilledBarcode;
+  final String? prefilledCompanyName;
+
+  const ContributePage({
+    Key? key,
+    this.prefilledBarcode,
+    this.prefilledCompanyName,
+  }) : super(key: key);
+
   @override
   _ContributePageState createState() => _ContributePageState();
 }
 
 class _ContributePageState extends State<ContributePage> {
-  final _brandNameController = TextEditingController();
-  final _barcodeController = TextEditingController();
+  late TextEditingController _brandNameController;
+  late TextEditingController _barcodeController;
   final _evidenceLinkController = TextEditingController();
 
   String? _selectedCategory;
@@ -35,6 +44,13 @@ class _ContributePageState extends State<ContributePage> {
   final DatabaseServiceBarcode _databaseService = DatabaseServiceBarcode();
 
   @override
+  void initState() {
+    super.initState();
+    _brandNameController = TextEditingController(text: widget.prefilledCompanyName ?? '');
+    _barcodeController = TextEditingController(text: widget.prefilledBarcode ?? '');
+  }
+
+  @override
   void dispose() {
     _brandNameController.dispose();
     _barcodeController.dispose();
@@ -42,13 +58,11 @@ class _ContributePageState extends State<ContributePage> {
     super.dispose();
   }
 
-  /// Validate URL
   bool _isValidUrl(String url) {
     final Uri? uri = Uri.tryParse(url);
     return uri != null && (uri.isScheme('http') || uri.isScheme('https'));
   }
 
-  /// Submit the contribute barcode
   void _submitContributeBarcode() async {
     final brandName = _brandNameController.text.trim();
     final barcode = _barcodeController.text.trim();
@@ -78,7 +92,6 @@ class _ContributePageState extends State<ContributePage> {
         approved: false,
       );
 
-      // Check if barcode exists
       bool barcodeExists = await _databaseService.checkBarcodeExists(barcode);
 
       if (barcodeExists) {
@@ -88,7 +101,6 @@ class _ContributePageState extends State<ContributePage> {
         return;
       }
 
-      // Add barcode to Firestore
       await _databaseService.addBarcode(newBarcode);
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -118,7 +130,7 @@ class _ContributePageState extends State<ContributePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFFFD44F), // Background color
+      backgroundColor: Color(0xFFFFD44F),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Center(
@@ -144,15 +156,11 @@ class _ContributePageState extends State<ContributePage> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 20),
-
-                // Brand Name Field
                 TextField(
                   controller: _brandNameController,
                   decoration: _inputDecoration('Brand Name', hint: 'Type here'),
                 ),
                 SizedBox(height: 15),
-
-                // Category Dropdown
                 DropdownButtonFormField<String>(
                   value: _selectedCategory,
                   items: _categories.map((category) {
@@ -169,8 +177,6 @@ class _ContributePageState extends State<ContributePage> {
                   decoration: _inputDecoration('Category'),
                 ),
                 SizedBox(height: 15),
-
-                // Brand Type Dropdown
                 DropdownButtonFormField<String>(
                   value: _selectedBrandType,
                   items: _brandTypes.map((type) {
@@ -187,22 +193,16 @@ class _ContributePageState extends State<ContributePage> {
                   decoration: _inputDecoration('Brand Type'),
                 ),
                 SizedBox(height: 15),
-
-                // Barcode/Serial Number Field
                 TextField(
                   controller: _barcodeController,
                   decoration: _inputDecoration('Barcode / Serial Number', hint: 'Type here'),
                 ),
                 SizedBox(height: 15),
-
-                // Link of Evidence Field
                 TextField(
                   controller: _evidenceLinkController,
                   decoration: _inputDecoration('Link of Evidences', hint: 'Type here'),
                 ),
                 SizedBox(height: 30),
-
-                // Submit Button
                 ElevatedButton(
                   onPressed: _submitContributeBarcode,
                   style: ElevatedButton.styleFrom(

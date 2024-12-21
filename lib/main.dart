@@ -25,7 +25,7 @@ void main() async {
 
   runApp(
     MaterialApp(
-      initialRoute: '/search',
+      initialRoute: '/home',
       routes: {
         '/': (context) => SplashScreen(),
         '/front': (context) => FrontPage(),
@@ -38,12 +38,15 @@ void main() async {
         '/scan': (context) => ScanPage(),
         '/search': (context) => SearchPage(),
         '/contribute': (context) => ContributePage(),
-        '/report': (context) => ReportPage(),
+        '/report': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return ReportPage(companyName: args['companyName']); // Pass companyName
+        },
         '/report_wrongcategory': (context) => ReportWrongCategory(
-              barcodeNum: '',
+              companyName: '',
             ),
         '/report_wrongclass': (context) => ReportWrongClass(
-              barcodeNum: '',
+              companyName: '',
             ),
         /*'/report_misinfo': (context) => ReportWrongInfo(),*/
         '/admin_dashboard': (context) => AdminDashboardPage(),

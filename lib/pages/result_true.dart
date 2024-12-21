@@ -205,7 +205,9 @@ class ResultTruePage extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const ReportPage()),
+                      MaterialPageRoute(
+                        builder: (context) => ReportPage(companyName: companyName), // <-- Pass companyName here
+                      ),
                     );
                   },
                   child: const Text('Report'),

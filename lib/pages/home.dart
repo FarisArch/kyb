@@ -198,19 +198,30 @@ class _HomeState extends State<Home> {
                     future: Article.fetchArticles('general'),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        final articles = snapshot.data;
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        }
+
+                        if (snapshot.hasError) {
+                          return Center(child: Text('Failed to load articles.'));
+                        }
+
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Center(child: Text('No articles available.'));
+                        }
+
+                        final articles = snapshot.data!;
+
                         return Column(
-                          children: articles != null
-                              ? [
-                                  SizedBox(
-                                    height: 233,
-                                    child: NewsCard(
-                                      article: articles.first,
-                                      backgroundColor: Colors.white,
-                                    ),
-                                  )
-                                ]
-                              : [],
+                          children: [
+                            SizedBox(
+                              height: 233,
+                              child: NewsCard(
+                                article: articles.first, // Safely access the first article
+                                backgroundColor: Colors.white,
+                              ),
+                            ),
+                          ],
                         );
                       } else {
                         return Center(child: CircularProgressIndicator());

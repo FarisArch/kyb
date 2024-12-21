@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:kyb/pages/pages.dart';
 
 class ResultFalsePage extends StatelessWidget {
   final String companyName;
@@ -108,7 +109,9 @@ class ResultFalsePage extends StatelessWidget {
                 const SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context); // Navigate back to the previous page
+                    MaterialPageRoute(
+                      builder: (context) => ReportPage(companyName: companyName), // <-- Pass companyName here
+                    );
                   },
                   child: const Text('Report'),
                 ),

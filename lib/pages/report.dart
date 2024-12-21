@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:kyb/pages/pages.dart';
+import 'package:kyb/pages/report_wrongcategory.dart';
 
 class ReportPage extends StatelessWidget {
-  const ReportPage({super.key});
+  final String companyName;
+  const ReportPage({super.key, required this.companyName});
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +39,13 @@ class ReportPage extends StatelessWidget {
               context,
               'Product is in wrong category',
               Colors.white,
-                  () {
-                Navigator.pushNamed(context, '/report_wrongcategory');
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReportWrongCategory(companyName: companyName), // Replace with actual barcodeNum
+                  ),
+                );
               },
             ),
             SizedBox(height: 10),
@@ -45,8 +53,13 @@ class ReportPage extends StatelessWidget {
               context,
               'Product is in wrong classification',
               Colors.white,
-                  () {
-                Navigator.pushNamed(context, '/report_wrongclass');
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReportWrongClass(companyName: companyName), // Replace with actual barcodeNum
+                  ),
+                );
               },
             ),
             SizedBox(height: 10),
@@ -73,8 +86,7 @@ class ReportPage extends StatelessWidget {
     );
   }
 
-  Widget _buildReportButton(
-      BuildContext context, String text, Color color, VoidCallback onPressed) {
+  Widget _buildReportButton(BuildContext context, String text, Color color, VoidCallback onPressed) {
     return SizedBox(
       width: double.infinity, // Make buttons take the full width
       child: ElevatedButton(

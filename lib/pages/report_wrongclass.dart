@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firebase Firestore
 
 class ReportWrongClass extends StatefulWidget {
-  final String barcodeNum; // Accept barcodeNum from the result page
+  final String companyName; // Accept companyName from the result page
 
-  ReportWrongClass({required this.barcodeNum});
+  ReportWrongClass({required this.companyName});
 
   @override
   _ReportWrongClassState createState() => _ReportWrongClassState();
@@ -25,9 +25,9 @@ class _ReportWrongClassState extends State<ReportWrongClass> {
     if (selectedCategory != null && linkController.text.isNotEmpty) {
       try {
         await FirebaseFirestore.instance.collection('report_list').add({
-          'barcodeNum': widget.barcodeNum, // Save the barcode number
-          'brandType': selectedCategory,   // Save the selected ethical classification
-          'link': linkController.text,    // Save the evidence link
+          'companyName': widget.companyName, // Save the company name
+          'brandType': selectedCategory, // Save the selected ethical classification
+          'link': linkController.text, // Save the evidence link
           'timestamp': FieldValue.serverTimestamp(), // Save the submission time
         });
 

@@ -95,11 +95,13 @@ class _SearchPageState extends State<SearchPage> {
 
       if (result.docs.isNotEmpty) {
         final product = result.docs.first.data() as Map<String, dynamic>;
-        final brandType = product['brandType'];
-        final approved = product['approved'];
-        final companyName = product['companyName'];
-        final category = product['category'];
-        final link = product['link'];
+
+        // Safely extract data with default values
+        final brandType = product['brandType'] ?? 'Unknown';
+        final approved = product['approved'] ?? false; // Default to false
+        final companyName = product['companyName'] ?? 'Unknown';
+        final category = product['category'] ?? 'Uncategorized';
+        final link = product['evidenceLink'] ?? ''; // FIXED: Use evidenceLink field
 
         if (approved == true) {
           if (brandType == "Non-Recommended Brand") {
@@ -107,10 +109,10 @@ class _SearchPageState extends State<SearchPage> {
               context,
               MaterialPageRoute(
                 builder: (context) => ResultTruePage(
-                  companyName: companyName ?? '',
-                  brandType: brandType ?? '',
-                  category: category ?? '',
-                  link: link ?? '',
+                  companyName: companyName,
+                  brandType: brandType,
+                  category: category,
+                  link: link,
                 ),
               ),
             );
@@ -119,20 +121,28 @@ class _SearchPageState extends State<SearchPage> {
               context,
               MaterialPageRoute(
                 builder: (context) => ResultFalsePage(
-                  companyName: companyName ?? '',
-                  brandType: brandType ?? '',
-                  category: category ?? '',
-                  link: link ?? '',
+                  companyName: companyName,
+                  brandType: brandType,
+                  category: category,
+                  link: link,
                 ),
               ),
             );
           }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Brand is not approved.')),
+          );
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No results found.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No results found.')),
+        );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     }
   }
 

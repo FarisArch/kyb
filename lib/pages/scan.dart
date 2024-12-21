@@ -1,14 +1,10 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:kyb/pages/pages.dart';
 import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
-import 'package:html/dom.dart' as dom; // Alias the html package's `Element`
 import 'package:kyb/navigation/navigation_bar.dart';
-import 'package:kyb/services/database_service_barcode.dart';
-import 'package:kyb/models/barcode.dart';
+import 'package:collection/collection.dart';
 
 class ScanPage extends StatefulWidget {
   const ScanPage({super.key});
@@ -24,8 +20,6 @@ class _ScanPageState extends State<ScanPage> {
     Home(),
     NewsPage(),
     ScanPage(),
-    // SearchPage(),
-    // ContributePage(),
   ];
 
   Future<void> _scanBarcode() async {
@@ -35,53 +29,50 @@ class _ScanPageState extends State<ScanPage> {
         _scanResult = barcodeScanRes.rawContent;
       });
 
-      final url = 'https://go-upc.com/search?q=${_scanResult}';
+      final url = 'https://go-upc.com/search?q=$_scanResult';
       final response = await http.get(Uri.parse(url));
+
+      String brandName = '';
+      String categoryName = '';
 
       if (response.statusCode == 200) {
         final document = parse(response.body);
 
         // Extract Brand
-        final dom.Element? brandElement = document.querySelectorAll('tr').firstWhere(
+        final brandElement = document.querySelectorAll('tr').firstWhereOrNull(
               (element) => element.querySelector('td')?.text.contains('Brand') ?? false,
-              orElse: () => dom.Element.tag('dummy'), // Return a dummy element if not found
             );
 
-        // Extract Category
-        final dom.Element? categoryElement = document.querySelectorAll('tr').firstWhere(
-              (element) => element.querySelector('td')?.text.contains('Category') ?? false,
-              orElse: () => dom.Element.tag('dummy'), // Return a dummy element if not found
-            );
-
-        // Check and retrieve Brand name
-        if (brandElement != null && brandElement.querySelectorAll('td').length > 1) {
-          final brandName = brandElement.querySelectorAll('td')[1]?.text.trim() ?? 'N/A'; // Get the value in the next <td>
-          print('Brand: $brandName');
+        if (brandElement != null) {
+          brandName = brandElement.querySelectorAll('td')[1]?.text.trim() ?? '';
         } else {
-          print('Brand not found');
+          print('Brand not found.');
         }
 
-        // Check and retrieve Category name
-        if (categoryElement != null && categoryElement.querySelectorAll('td').length > 1) {
-          final categoryName = categoryElement.querySelectorAll('td')[1]?.text.trim() ?? 'N/A'; // Get the value in the next <td>
-          final brandName = '';
-          print('Category: $categoryName');
+        // Extract Category
+        final categoryElement = document.querySelectorAll('tr').firstWhereOrNull(
+              (element) => element.querySelector('td')?.text.contains('Category') ?? false,
+            );
 
-          // Add barcode and category to database
-// Add barcode and category to database
-          final DatabaseServiceBarcode databaseServiceBarcode = DatabaseServiceBarcode();
-          final Barcode barcode = Barcode(
-            barcodeNum: _scanResult,
-            companyName: brandName,
-            category: categoryName,
-          );
-          databaseServiceBarcode.addBarcode(barcode);
+        if (categoryElement != null) {
+          categoryName = categoryElement.querySelectorAll('td')[1]?.text.trim() ?? '';
         } else {
-          print('Category not found');
+          print('Category not found.');
         }
       } else {
         print('Request failed with status code: ${response.statusCode}');
       }
+
+      // Navigate to ContributePage with prefilled values
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ContributePage(
+            prefilledBarcode: _scanResult,
+            prefilledCompanyName: brandName.isNotEmpty ? brandName : null,
+          ),
+        ),
+      );
     } catch (e) {
       print('Error scanning barcode: $e');
     }

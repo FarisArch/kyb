@@ -1,8 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kyb/services/auth_service.dart';
-
 import '../auth/forgot_pass.dart';
 
 class LoginPage extends StatefulWidget {
@@ -21,6 +22,21 @@ class _LoginPageState extends State<LoginPage> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  // Function to check if the user is an admin
+  Future<bool> _checkIfAdmin() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      final idTokenResult = await user.getIdTokenResult();
+      final claims = idTokenResult.claims;
+
+      // Check if 'admin' claim is true
+      return claims != null && claims['admin'] == true;
+    }
+
+    return false;
   }
 
   @override
@@ -49,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Container(
                   width: 350,
                   child: TextFormField(
-                    controller: _emailController, // Assign the controller here
+                    controller: _emailController,
                     decoration: InputDecoration(
                       hintText: 'Username',
                       hintStyle: TextStyle(color: Color.fromRGBO(255, 220, 80, 1)),
@@ -57,13 +73,6 @@ class _LoginPageState extends State<LoginPage> {
                       filled: true,
                       fillColor: Colors.white,
                     ),
-                    maxLines: 1,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a username';
-                      }
-                      return null;
-                    },
                   ),
                 ),
               ),
@@ -72,9 +81,8 @@ class _LoginPageState extends State<LoginPage> {
                 child: Container(
                   width: 350,
                   child: TextFormField(
-                    controller: _passwordController, // Assign the controller here
+                    controller: _passwordController,
                     obscureText: true,
-                    maxLines: 1,
                     decoration: InputDecoration(
                       hintText: 'Password',
                       hintStyle: TextStyle(color: Color.fromRGBO(255, 220, 80, 1)),
@@ -82,18 +90,10 @@ class _LoginPageState extends State<LoginPage> {
                       filled: true,
                       fillColor: Colors.white,
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a password';
-                      }
-                      return null;
-                    },
                   ),
                 ),
               ),
-              SizedBox(
-                height: 10,
-              ),
+              SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -107,12 +107,12 @@ class _LoginPageState extends State<LoginPage> {
                     child: const Text(
                       "Forgot Password?",
                       style: TextStyle(
-                        color: Colors.white, // Match text color to the rest of the theme
-                        fontSize: 16, // Adjust font size for better readability
+                        color: Colors.white,
+                        fontSize: 16,
                       ),
                     ),
                   ),
-                  SizedBox(width: 15), // Add padding to prevent it from sticking to the edge
+                  SizedBox(width: 15),
                 ],
               ),
               SizedBox(height: 30),
@@ -124,11 +124,53 @@ class _LoginPageState extends State<LoginPage> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.pink),
                     onPressed: () async {
-                      AuthenticationService().login(
-                        email: _emailController.text, // Use the controller's text here
-                        password: _passwordController.text, // Use the controller's text here
-                        context: context,
-                      );
+                      try {
+                        // Attempt to log in the user
+                        await FirebaseAuth.instance.signInWithEmailAndPassword(
+                          email: _emailController.text.trim(),
+                          password: _passwordController.text.trim(),
+                        );
+
+                        // Once logged in, fetch the user
+                        final user = FirebaseAuth.instance.currentUser;
+
+                        if (user != null) {
+                          // Force token refresh to get updated claims
+                          await user.getIdToken(true);
+                          final idTokenResult = await user.getIdTokenResult();
+
+                          // Check if the user has admin claims
+                          final isAdmin = idTokenResult.claims?['isAdmin'] ?? false;
+
+                          if (isAdmin) {
+                            // Redirect admin users to admin dashboard
+                            Navigator.pushReplacementNamed(context, '/admin_dashboard');
+                          } else {
+                            // Redirect regular users to home page
+                            Navigator.pushReplacementNamed(context, '/home');
+                          }
+                        }
+                      } on FirebaseAuthException catch (e) {
+                        // Handle login errors properly
+                        String errorMessage;
+
+                        if (e.code == 'user-not-found') {
+                          errorMessage = 'No user found with this email.';
+                        } else if (e.code == 'wrong-password') {
+                          errorMessage = 'Wrong password provided.';
+                        } else {
+                          errorMessage = 'Login failed. Please try again.';
+                        }
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(errorMessage)),
+                        );
+                      } catch (e) {
+                        // Catch any unexpected errors
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('An error occurred: ${e.toString()}')),
+                        );
+                      }
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -150,7 +192,6 @@ class _LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.fromLTRB(0, 150, 0, 0),
                 child: GestureDetector(
                   onTap: () {
-                    // Navigate to register.dart
                     Navigator.pushNamed(context, '/register');
                   },
                   child: Text(

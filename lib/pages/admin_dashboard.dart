@@ -36,7 +36,7 @@ class AdminDashboardPage extends StatelessWidget {
               context,
               'Add a new brand',
               Colors.white,
-                  () {
+              () {
                 Navigator.pushNamed(context, '/admin_new_brand');
               },
             ),
@@ -45,7 +45,7 @@ class AdminDashboardPage extends StatelessWidget {
               context,
               'Update existing brand information',
               Colors.white,
-                  () {
+              () {
                 Navigator.pushNamed(context, '/admin_update_brand');
               },
             ),
@@ -54,8 +54,17 @@ class AdminDashboardPage extends StatelessWidget {
               context,
               "View brands report",
               Colors.white,
-                  () {
+              () {
                 Navigator.pushNamed(context, '/admin_view_reports');
+              },
+            ),
+            SizedBox(height: 10),
+            _buildReportButton(
+              context,
+              "Brand Approvals",
+              Colors.white,
+              () {
+                Navigator.pushNamed(context, '/admin_approval');
               },
             ),
           ],
@@ -64,8 +73,7 @@ class AdminDashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildReportButton(
-      BuildContext context, String text, Color color, VoidCallback onPressed) {
+  Widget _buildReportButton(BuildContext context, String text, Color color, VoidCallback onPressed) {
     return SizedBox(
       width: double.infinity, // Makes the button take full width
       child: ElevatedButton(

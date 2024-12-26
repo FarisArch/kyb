@@ -2,7 +2,7 @@ import 'package:kyb/models/barcode.dart';
 
 class ContributeBarcode extends Barcode {
   final String brandType;
-  final String link;
+  final String evidenceLink;
   final bool approved;
 
   ContributeBarcode({
@@ -10,7 +10,7 @@ class ContributeBarcode extends Barcode {
     required String companyName,
     required String category,
     required this.brandType,
-    required this.link,
+    required this.evidenceLink,
     this.approved = false,
   }) : super(
           barcodeNum: barcodeNum.toLowerCase(),
@@ -25,7 +25,7 @@ class ContributeBarcode extends Barcode {
       companyName: (json['companyName']! as String).toLowerCase(),
       category: (json['category']! as String).toLowerCase(),
       brandType: (json['brandType']! as String).toLowerCase(),
-      link: (json['link']! as String).toLowerCase(),
+      evidenceLink: (json['evidenceLink']! as String).toLowerCase(),
       approved: json['approved'] as bool? ?? false,
     );
   }
@@ -35,7 +35,7 @@ class ContributeBarcode extends Barcode {
     final json = super.toJson();
     json.addAll({
       'brandType': brandType,
-      'link': link,
+      'evidenceLink': evidenceLink,
       'approved': approved,
     });
     return json;
@@ -46,7 +46,7 @@ class ContributeBarcode extends Barcode {
     final json = super.toJson();
     json.addAll({
       'brandType': brandType.toLowerCase(),
-      'link': link.toLowerCase(),
+      'evidenceLink': evidenceLink.toLowerCase(),
       'approved': approved,
     });
     return json;

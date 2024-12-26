@@ -51,7 +51,8 @@ class _AdminContributePageState extends State<AdminContributePage> {
       companyName: brandName,
       category: _selectedCategory!,
       brandType: _selectedBrandType!,
-      link: evidenceLink, approved: true,
+      evidenceLink: evidenceLink,
+      approved: true,
     );
 
     // Directly add the barcode to the database

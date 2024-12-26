@@ -22,3 +22,4 @@ export 'package:kyb/pages/admin_update_brand.dart';
 export 'package:kyb/pages/result.dart';
 export 'package:kyb/models/article.dart';
 export 'package:kyb/pages/admin_edit_page.dart';
+export 'package:kyb/pages/admin_approval.dart';

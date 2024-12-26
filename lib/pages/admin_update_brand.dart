@@ -75,27 +75,65 @@ class _AdminBrandsUpdateState extends State<AdminBrandsUpdate> {
     }
   }
 
+  void _updateAllEntries(String selectedCompany, Map<String, dynamic> updatedData) async {
+    try {
+      final QuerySnapshot result = await barcodesCollection.where('companyName', isEqualTo: selectedCompany).get();
+
+      // Batch update all matching documents
+      final WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      for (var doc in result.docs) {
+        batch.update(doc.reference, updatedData);
+      }
+
+      await batch.commit();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('All entries updated successfully!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating entries: $e')),
+      );
+    }
+  }
+
   void _redirectToDetails(String selectedCompany) async {
     try {
-      final result = await barcodesCollection.where('companyName', isEqualTo: selectedCompany).get();
+      final QuerySnapshot result = await barcodesCollection.where('companyName', isEqualTo: selectedCompany).get();
 
       if (result.docs.isNotEmpty) {
-        final doc = result.docs.first;
-        final product = doc.data() as Map<String, dynamic>;
+        // Safely loop through documents and check for valid data
+        final doc = result.docs.first; // Use the first match for editing
+        final data = doc.data();
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EditBrandPage(
-              documentId: doc.id,
-              companyName: product['companyName'],
-              brandType: product['brandType'],
-              category: product['category'],
-              link: product['link'],
-              approved: product['approved'],
+        // Ensure data is not null and is a Map
+        if (data != null && data is Map<String, dynamic>) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditBrandPage(
+                documentId: doc.id,
+                companyName: data['companyName'] ?? '',
+                brandType: data['brandType'] ?? '',
+                category: data['category'] ?? '',
+                approved: data['approved'] ?? false, // Default to false
+                evidenceLink: data['evidenceLink'] ?? '',
+                logoURL: data['logoURL'] ?? '',
+                barcodeNum: data['barcodeNum'] ?? '',
+              ),
             ),
-          ),
-        );
+          ).then((updatedData) {
+            // After editing, apply changes to all matching documents
+            if (updatedData != null) {
+              _updateAllEntries(selectedCompany, updatedData);
+            }
+          });
+        } else {
+          // Handle invalid data scenario
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Invalid data format for the selected company.')),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('No results found for the selected company.')),
@@ -111,7 +149,6 @@ class _AdminBrandsUpdateState extends State<AdminBrandsUpdate> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: NavigationControl(),
       backgroundColor: const Color.fromRGBO(255, 220, 80, 1),
       appBar: AppBar(
         title: const Text("Search for brands to update"),
@@ -163,39 +200,11 @@ class _AdminBrandsUpdateState extends State<AdminBrandsUpdate> {
                   ),
                 ),
               ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryTile(BuildContext context, String label, IconData icon) {
-    return GestureDetector(
-      onTap: () => _checkCategory(label),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        margin: const EdgeInsets.all(8),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 40, color: Colors.black),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(color: Colors.black),
-            ),
+            if (_isLoading)
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: CircularProgressIndicator(),
+              ),
           ],
         ),
       ),

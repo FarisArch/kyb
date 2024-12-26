@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kyb/pages/admin_edit_page.dart';
 
 class AdminBrandsReport extends StatefulWidget {
   @override
@@ -81,7 +82,7 @@ class _AdminBrandsReportState extends State<AdminBrandsReport> {
                     children: [
                       // Display barcode number
                       Text(
-                        'Barcode Number: ${data['barcodeNum'] ?? 'N/A'}',
+                        'Company Name: ${data['companyName'] ?? 'N/A'}',
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
                       ),
                       SizedBox(height: 8),
@@ -116,20 +117,31 @@ class _AdminBrandsReportState extends State<AdminBrandsReport> {
                           // Update Brand Details Button
                           ElevatedButton(
                             onPressed: () {
-                              Navigator.pushNamed(
-                                context,
-                                '/adminUpdateBrand',
-                                arguments: {
-                                  'reportId': report.id,
-                                  'barcodeNum': data['barcodeNum'],
-                                  'category': data['category'],
-                                  'link': data['link'],
-                                },
-                              );
+                              FirebaseFirestore.instance.collection('barcodes').doc(report.id).get().then((snapshot) {
+                                final data = snapshot.data() as Map<String, dynamic>;
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => EditBrandPage(
+                                            documentId: report.id,
+                                            companyName: data['companyName'] ?? '', // Default to empty string
+                                            brandType: data['brandType'] ?? '',
+                                            category: data['category'] ?? '',
+                                            approved: data['approved'] ?? false, // Fixed to default as false (boolean)
+                                            evidenceLink: data['evidenceLink'] ?? '', // Added evidenceLink field
+                                            logoURL: data['logoURL'] ?? '', // Added logoURL field
+                                            barcodeNum: data['barcodeNum'] ?? '', // Added barcodeNum field
+                                          )),
+                                );
+                              }).catchError((e) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Failed to load brand details: $e')),
+                                );
+                              });
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue, // Blue button background
-                              foregroundColor: Colors.white, // White text on button
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
                               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                             ),
                             child: Text('Update Brand Details'),

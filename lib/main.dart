@@ -25,7 +25,7 @@ void main() async {
 
   runApp(
     MaterialApp(
-      initialRoute: '/home',
+      initialRoute: '/admin_dashboard',
       routes: {
         '/': (context) => SplashScreen(),
         '/front': (context) => FrontPage(),
@@ -53,17 +53,8 @@ void main() async {
         '/admin_new_brand': (context) => AdminContributePage(),
         '/admin_view_reports': (context) => AdminBrandsReport(),
         '/admin_update_brand': (context) => AdminBrandsUpdate(),
+        '/admin_approval': (context) => AdminApprovalPage(),
       },
     ),
   );
 }
-
-// Main page or scanner page example
-/*void navigateToResult(BuildContext context, bool isBoycotted) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ResultPage(isBoycotted: isBoycotted),
-    ),
-  );
-}*/

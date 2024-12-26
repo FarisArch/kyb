@@ -6,9 +6,10 @@ class EditBrandPage extends StatefulWidget {
   final String companyName;
   final String brandType;
   final String category;
-  final String link;
   final bool? approved;
-  final String? logoUrl; // Added logoUrl field
+  final String evidenceLink;
+  final String logoURL;
+  final String barcodeNum; // Added barcodeNum field
 
   const EditBrandPage({
     super.key,
@@ -16,9 +17,10 @@ class EditBrandPage extends StatefulWidget {
     required this.companyName,
     required this.brandType,
     required this.category,
-    required this.link,
     required this.approved,
-    this.logoUrl, // Optional logoUrl field
+    required this.evidenceLink,
+    required this.logoURL,
+    required this.barcodeNum, // Required barcodeNum
   });
 
   @override
@@ -27,8 +29,8 @@ class EditBrandPage extends StatefulWidget {
 
 class _EditBrandPageState extends State<EditBrandPage> {
   late TextEditingController _companyNameController;
-  late TextEditingController _linkController;
-  late TextEditingController _logoUrlController; // Added TextEditingController for logoUrl
+  late TextEditingController _evidenceLinkController; // Renamed controller
+  late TextEditingController _logoURLController; // Updated name
   bool? _approved;
   late String _selectedCategory;
   late String _selectedBrandType;
@@ -54,11 +56,10 @@ class _EditBrandPageState extends State<EditBrandPage> {
   void initState() {
     super.initState();
     _companyNameController = TextEditingController(text: widget.companyName);
-    _linkController = TextEditingController(text: widget.link);
-    _logoUrlController = TextEditingController(text: widget.logoUrl ?? ''); // Initialize with existing logoUrl or empty string
-    _approved = widget.approved;
+    _evidenceLinkController = TextEditingController(text: widget.evidenceLink); // Set evidence link
+    _logoURLController = TextEditingController(text: widget.logoURL); // Set logo URL
+    _approved = widget.approved ?? false;
 
-    // Validate category and brand type against available options
     _selectedCategory = _categories.contains(widget.category) ? widget.category : _categories.first;
     _selectedBrandType = _brandTypes.contains(widget.brandType) ? widget.brandType : _brandTypes.first;
   }
@@ -69,11 +70,11 @@ class _EditBrandPageState extends State<EditBrandPage> {
 
       await docRef.update({
         'companyName': _companyNameController.text,
-        'brandType': _selectedBrandType.toLowerCase(),
-        'category': _selectedCategory.toLowerCase(),
-        'link': _linkController.text,
+        'brandType': _selectedBrandType.toLowerCase(), // Enforce lowercase
+        'category': _selectedCategory.toLowerCase(), // Enforce lowercase
         'approved': _approved,
-        'logoUrl': _logoUrlController.text, // Save the logoUrl
+        'evidenceLink': _evidenceLinkController.text, // Correct field name
+        'logoURL': _logoURLController.text, // Correct field name
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -102,6 +103,22 @@ class _EditBrandPageState extends State<EditBrandPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Display barcode number (read-only)
+              TextField(
+                controller: TextEditingController(text: widget.barcodeNum),
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: 'Barcode Number',
+                  labelStyle: const TextStyle(color: Colors.black26),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                style: const TextStyle(color: Colors.black),
+              ),
+              const SizedBox(height: 16),
               TextField(
                 controller: _companyNameController,
                 decoration: InputDecoration(
@@ -120,7 +137,6 @@ class _EditBrandPageState extends State<EditBrandPage> {
                 value: _selectedBrandType,
                 decoration: InputDecoration(
                   labelText: 'Brand Type',
-                  labelStyle: const TextStyle(color: Colors.black26),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -130,24 +146,18 @@ class _EditBrandPageState extends State<EditBrandPage> {
                 items: _brandTypes.map((brandType) {
                   return DropdownMenuItem(
                     value: brandType,
-                    child: Text(
-                      brandType,
-                      style: const TextStyle(color: Colors.black),
-                    ),
+                    child: Text(brandType),
                   );
                 }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedBrandType = value ?? '';
-                  });
-                },
+                onChanged: (value) => setState(() {
+                  _selectedBrandType = value ?? '';
+                }),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _selectedCategory,
                 decoration: InputDecoration(
                   labelText: 'Category',
-                  labelStyle: const TextStyle(color: Colors.black26),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -157,24 +167,18 @@ class _EditBrandPageState extends State<EditBrandPage> {
                 items: _categories.map((category) {
                   return DropdownMenuItem(
                     value: category,
-                    child: Text(
-                      category,
-                      style: const TextStyle(color: Colors.black),
-                    ),
+                    child: Text(category),
                   );
                 }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCategory = value ?? '';
-                  });
-                },
+                onChanged: (value) => setState(() {
+                  _selectedCategory = value ?? '';
+                }),
               ),
               const SizedBox(height: 16),
               TextField(
-                controller: _linkController,
+                controller: _evidenceLinkController,
                 decoration: InputDecoration(
                   labelText: 'Evidence Link',
-                  labelStyle: const TextStyle(color: Colors.black26),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -185,10 +189,9 @@ class _EditBrandPageState extends State<EditBrandPage> {
               ),
               const SizedBox(height: 16),
               TextField(
-                controller: _logoUrlController, // Added TextField for logoUrl
+                controller: _logoURLController,
                 decoration: InputDecoration(
-                  labelText: 'Logo URL (Optional)',
-                  labelStyle: const TextStyle(color: Colors.black26),
+                  labelText: 'Logo URL',
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -199,30 +202,16 @@ class _EditBrandPageState extends State<EditBrandPage> {
               ),
               const SizedBox(height: 16),
               SwitchListTile(
-                title: const Text(
-                  'Approved',
-                  style: TextStyle(color: Colors.black),
-                ),
+                title: const Text('Approved'),
                 value: _approved ?? false,
-                onChanged: (value) {
-                  setState(() {
-                    _approved = value;
-                  });
-                },
+                onChanged: (value) => setState(() {
+                  _approved = value;
+                }),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(255, 193, 7, 1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
                 onPressed: _saveChanges,
-                child: const Text(
-                  'Save Changes',
-                  style: TextStyle(color: Colors.black),
-                ),
+                child: const Text('Save Changes'),
               ),
             ],
           ),

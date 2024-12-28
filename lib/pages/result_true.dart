@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firebase Firestore
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:kyb/pages/pages.dart';
@@ -19,20 +19,12 @@ class ResultTruePage extends StatelessWidget {
 
   String toTitleCase(String text) {
     if (text.isEmpty) return text;
-    return text
-        .split(' ') // Split the text by spaces
-        .map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase()) // Capitalize each word
-        .join(' '); // Join them back with spaces
+    return text.split(' ').map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase()).join(' ');
   }
 
   Future<List<Map<String, dynamic>>> fetchAlternativeBrands() async {
     try {
-      // Fetch alternative brands from the 'barcodes' collection
-      final QuerySnapshot snapshot = await FirebaseFirestore.instance
-          .collection('barcodes') // Updated collection name
-          .where('category', isEqualTo: category) // Match category
-          .where('brandType', isEqualTo: 'Recommended Brand') // Match brandType
-          .get();
+      final QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('barcodes').where('category', isEqualTo: category).where('brandType', isEqualTo: 'Recommended Brand').limit(3).get();
 
       final brands = snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
 
@@ -48,7 +40,6 @@ class ResultTruePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Generate logo URL based on company name
     final String logoUrl = 'https://img.logo.dev/${companyName.toLowerCase().replaceAll(' ', '')}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
 
     return Scaffold(
@@ -65,7 +56,13 @@ class ResultTruePage extends StatelessWidget {
               logoUrl,
               height: 100,
               errorBuilder: (context, error, stackTrace) {
-                return const Text('No logo available');
+                return Container(
+                  height: 100,
+                  width: 100,
+                  alignment: Alignment.center,
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.image_not_supported, size: 60, color: Colors.grey),
+                );
               },
             ),
             const SizedBox(height: 20),
@@ -145,20 +142,28 @@ class ResultTruePage extends StatelessWidget {
                           crossAxisCount: 3,
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10,
-                          childAspectRatio: 1.2, // Adjust to control the height
+                          childAspectRatio: 1,
                         ),
                         itemCount: alternativeBrands.length,
                         itemBuilder: (context, index) {
                           final brand = alternativeBrands[index];
+                          final altLogoUrl = 'https://img.logo.dev/${brand['companyName'].toLowerCase().replaceAll(' ', '')}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
                           return Column(
                             children: [
-                              brand['logoUrl'] != null
-                                  ? Image.network(
-                                      brand['logoUrl'],
-                                      height: 30,
-                                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.image_not_supported, size: 60),
-                                    )
-                                  : const Icon(Icons.image, size: 60),
+                              Image.network(
+                                altLogoUrl,
+                                height: 60,
+                                width: 60,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    height: 60,
+                                    width: 60,
+                                    alignment: Alignment.center,
+                                    color: Colors.grey[300],
+                                    child: const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+                                  );
+                                },
+                              ),
                               const SizedBox(height: 5),
                               Text(
                                 toTitleCase(brand['companyName'] ?? 'Unknown'),
@@ -206,7 +211,7 @@ class ResultTruePage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ReportPage(companyName: companyName), // <-- Pass companyName here
+                        builder: (context) => ReportPage(companyName: companyName),
                       ),
                     );
                   },
@@ -223,7 +228,7 @@ class ResultTruePage extends StatelessWidget {
                   TextSpan(
                     text: 'Logo.dev',
                     style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
-                    recognizer: TapGestureRecognizer()..onTap = () async {},
+                    recognizer: TapGestureRecognizer()..onTap = () {},
                   ),
                 ],
               ),

@@ -70,16 +70,22 @@ class _SearchPageState extends State<SearchPage> {
       _isLoading = true;
       _selectedCategory = category;
       _brandsInCategory = [];
-      _allBrandsInCategory = []; // Clear backup list
+      _allBrandsInCategory = [];
       _searchController.clear(); // Clear search bar
     });
 
     try {
-      final QuerySnapshot result = await barcodesCollection.where('category', isEqualTo: category).where('approved', isEqualTo: true).get();
+      // Convert the category to lowercase to match Firestore data
+      final normalizedCategory = category.toLowerCase();
+
+      final QuerySnapshot result = await barcodesCollection
+          .where('category', isEqualTo: normalizedCategory) // Match lowercase category
+          .where('approved', isEqualTo: true)
+          .get();
 
       setState(() {
         _brandsInCategory = result.docs.map((doc) => (doc.data() as Map<String, dynamic>)['companyName'] as String).toList();
-        _allBrandsInCategory = List.from(_brandsInCategory); // Save a copy of the original list
+        _allBrandsInCategory = List.from(_brandsInCategory); // Backup list
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));

@@ -16,15 +16,12 @@ class _ReportWrongCategoryState extends State<ReportWrongCategory> {
 
   // Define the list of categories
   final List<String> categories = [
-    'Automotive',
     'Technology',
     'Fashion',
-    'Manufacturer',
-    'Supermarket',
+    'Household',
     'Cosmetics',
-    'Finance',
-    'Food & Beverages',
-    'Entertainment',
+    'Food',
+    'Healthcare',
   ];
 
   // Submit the form and save data to Firebase

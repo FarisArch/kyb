@@ -216,15 +216,12 @@ class _SearchPageState extends State<SearchPage> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
-                    _buildCategoryTile(context, "Automotive", Icons.directions_car),
                     _buildCategoryTile(context, "Technology", Icons.devices),
                     _buildCategoryTile(context, "Fashion", Icons.checkroom),
-                    _buildCategoryTile(context, "Manufacturer", Icons.factory),
-                    _buildCategoryTile(context, "Supermarket", Icons.store),
+                    _buildCategoryTile(context, "Household", Icons.home),
                     _buildCategoryTile(context, "Cosmetics", Icons.brush),
-                    _buildCategoryTile(context, "Finance", Icons.account_balance),
-                    _buildCategoryTile(context, "F&B", Icons.fastfood),
-                    _buildCategoryTile(context, "Entertainment", Icons.movie),
+                    _buildCategoryTile(context, "Food", Icons.fastfood),
+                    _buildCategoryTile(context, "Healthcare", Icons.health_and_safety_sharp),
                   ],
                 )
               else ...[

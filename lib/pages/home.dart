@@ -11,15 +11,12 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final List<String> _categories = [
-    'Automotive',
-    'Fashion',
     'Technology',
-    'Manufacturer',
-    'Supermarket',
+    'Fashion',
+    'Household',
     'Cosmetics',
-    'Finance',
-    'F&B',
-    'Entertainment',
+    'Food',
+    'Healthcare',
   ];
 
   late final List<String> _selectedCategories = _getCategoriesForToday();

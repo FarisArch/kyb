@@ -25,15 +25,12 @@ class _ContributePageState extends State<ContributePage> {
   String? _selectedBrandType;
 
   final List<String> _categories = [
-    'Automotive',
-    'Fashion',
     'Technology',
-    'Manufacturer',
-    'Supermarket',
+    'Fashion',
+    'Household',
     'Cosmetics',
-    'Finance',
-    'F&B',
-    'Entertainment',
+    'Food',
+    'Healthcare',
   ];
 
   final List<String> _brandTypes = [

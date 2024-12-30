@@ -7,6 +7,7 @@ class ResultFalsePage extends StatelessWidget {
   final String brandType;
   final String category;
   final String link;
+  final String? logoURL;
 
   const ResultFalsePage({
     super.key,
@@ -14,6 +15,7 @@ class ResultFalsePage extends StatelessWidget {
     required this.brandType,
     required this.category,
     required this.link,
+    this.logoURL,
   });
 
   String toTitleCase(String text) {
@@ -26,8 +28,8 @@ class ResultFalsePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Generate logo URL based on company name
-    final String logoUrl = 'https://img.logo.dev/${companyName.toLowerCase().replaceAll(' ', '')}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
+    // Generate fallback logo URL based on company name
+    final String fallbackLogoUrl = 'https://img.logo.dev/${companyName.toLowerCase().replaceAll(' ', '')}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
 
     return Scaffold(
       backgroundColor: Colors.green[100],
@@ -41,10 +43,13 @@ class ResultFalsePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.network(
-              logoUrl,
+              logoURL?.isNotEmpty == true ? logoURL! : fallbackLogoUrl, // Prioritize logoURL, fallback if null
               height: 100,
               errorBuilder: (context, error, stackTrace) {
-                return const Text('No logo available');
+                return Image.asset(
+                  'assets/placeholder_logo.png', // Placeholder logo if both fail
+                  height: 100,
+                );
               },
             ),
             const SizedBox(height: 20),
@@ -110,7 +115,7 @@ class ResultFalsePage extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     MaterialPageRoute(
-                      builder: (context) => ReportPage(companyName: companyName), // <-- Pass companyName here
+                      builder: (context) => ReportPage(companyName: companyName),
                     );
                   },
                   child: const Text('Report'),

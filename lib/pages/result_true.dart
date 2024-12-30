@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:kyb/pages/pages.dart';
+import 'package:kyb/pages/result_false.dart';
 
 class ResultTruePage extends StatelessWidget {
   final String companyName;
@@ -147,30 +148,45 @@ class ResultTruePage extends StatelessWidget {
                         itemCount: alternativeBrands.length,
                         itemBuilder: (context, index) {
                           final brand = alternativeBrands[index];
-                          final altLogoUrl = 'https://img.logo.dev/${brand['companyName'].toLowerCase().replaceAll(' ', '')}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
-                          return Column(
-                            children: [
-                              Image.network(
-                                altLogoUrl,
-                                height: 60,
-                                width: 60,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    height: 60,
-                                    width: 60,
-                                    alignment: Alignment.center,
-                                    color: Colors.grey[300],
-                                    child: const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                toTitleCase(brand['companyName'] ?? 'Unknown'),
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                            ],
+                          final altLogoUrl = 'https://img.logo.dev/${(brand['companyName'] ?? 'unknown').toLowerCase().replaceAll(' ', '')}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ResultFalsePage(
+                                    companyName: brand['companyName'] ?? 'Unknown',
+                                    brandType: brand['brandType'] ?? 'Unknown',
+                                    category: brand['category'] ?? 'Unknown',
+                                    link: brand['link'] ?? 'No link',
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Column(
+                              children: [
+                                Image.network(
+                                  altLogoUrl,
+                                  height: 60,
+                                  width: 60,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      height: 60,
+                                      width: 60,
+                                      alignment: Alignment.center,
+                                      color: Colors.grey[300],
+                                      child: const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  toTitleCase(brand['companyName'] ?? 'Unknown'),
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ],
+                            ),
                           );
                         },
                       ),
@@ -178,46 +194,6 @@ class ResultTruePage extends StatelessWidget {
                   ),
                 );
               },
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Proof for ${toTitleCase(companyName)}'),
-                          content: Text('Proof link: $link'),
-                          actions: [
-                            TextButton(
-                              child: const Text('OK'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                  child: const Text('View proof'),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ReportPage(companyName: companyName),
-                      ),
-                    );
-                  },
-                  child: const Text('Report'),
-                ),
-              ],
             ),
             const SizedBox(height: 20),
             RichText(

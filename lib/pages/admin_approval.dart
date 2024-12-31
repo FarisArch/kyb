@@ -35,7 +35,7 @@ class AdminApprovalPage extends StatelessWidget {
                 child: ListTile(
                   title: Text(doc['companyName'] ?? 'No Name'),
                   subtitle: Text(doc['category'] ?? 'No Category'),
-                  leading: (doc['logoURL'] != null && doc['logoURL'].isNotEmpty) ? Image.network(doc['logoURL'], width: 50, height: 50) : Icon(Icons.image_not_supported),
+                  leading: (doc.data() is Map<String, dynamic> && (doc.data() as Map<String, dynamic>).containsKey('logoURL') && (doc.data() as Map<String, dynamic>)['logoURL'] != null && (doc.data() as Map<String, dynamic>)['logoURL'].isNotEmpty) ? Image.network((doc.data() as Map<String, dynamic>)['logoURL'], width: 50, height: 50) : Icon(Icons.image_not_supported),
                   trailing: IconButton(
                     icon: Icon(Icons.arrow_forward),
                     onPressed: () => Navigator.push(
@@ -95,7 +95,7 @@ class ApprovalDetailPage extends StatelessWidget {
               },
             ),
             SizedBox(height: 20),
-            if (data['logoURL'] != null && data['logoURL'].isNotEmpty) Image.network(data['logoURL'], height: 100) else Text('No logo available', style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
+            if (data.containsKey('logoURL') && data['logoURL'] != null && data['logoURL'].isNotEmpty) Image.network(data['logoURL'], height: 100) else Text('No logo available', style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
             Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

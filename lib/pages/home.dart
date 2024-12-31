@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kyb/navigation/navigation_bar.dart';
 import 'package:kyb/pages/pages.dart';
+import 'package:kyb/pages/result_false.dart';
+import 'package:kyb/models/article.dart';
+import 'package:kyb/pages/news_card.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -27,6 +30,7 @@ class _HomeState extends State<Home> {
     final dayOfWeek = now.weekday;
     final random = Random(dayOfWeek);
     final shuffledCategories = List<String>.from(_categories)..shuffle(random);
+    print('Selected categories for today: \${shuffledCategories.take(2).toList()}');
     return shuffledCategories.take(2).toList();
   }
 
@@ -35,49 +39,59 @@ class _HomeState extends State<Home> {
     return text.split(' ').map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase()).join(' ');
   }
 
-  // Fetch random companies for a specific category where approved = true
-  Future<List<String>> _fetchCompanies(String category) async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('barcodes')
-        .where('category', isEqualTo: category)
-        .where('approved', isEqualTo: true) // Only approved documents
-        .limit(3)
-        .get();
+  Future<List<Map<String, dynamic>>> _fetchCompanies(String category) async {
+    print('Fetching companies for category: $category');
+    try {
+      final snapshot = await FirebaseFirestore.instance.collection('barcodes').where('category', isEqualTo: category.toLowerCase()).where('approved', isEqualTo: true).where('brandType', isEqualTo: 'Recommended Brand').limit(3).get();
 
-    return snapshot.docs.map((doc) => doc['companyName'] as String).toList();
+      if (snapshot.docs.isEmpty) {
+        print('No companies found for category: $category');
+      }
+
+      final companies = snapshot.docs.map((doc) {
+        return {
+          'companyName': doc['companyName'] as String,
+          'evidenceLink': doc['evidenceLink'] ?? 'No evidence link',
+        };
+      }).toList();
+
+      print('Fetched companies: $companies');
+      return companies;
+    } catch (e) {
+      print('Error fetching companies for category $category: $e');
+      return [];
+    }
   }
 
-  // Fetch logo URL for a specific company where approved = true
   Future<String?> _getCompanyLogoUrl(String companyName) async {
+    print('Fetching logo URL for company: $companyName');
     try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('barcodes')
-          .where('companyName', isEqualTo: companyName)
-          .where('approved', isEqualTo: true) // Only approved documents
-          .limit(5)
-          .get();
+      final snapshot = await FirebaseFirestore.instance.collection('barcodes').where('companyName', isEqualTo: companyName).where('approved', isEqualTo: true).where('brandType', isEqualTo: 'Recommended Brand').limit(1).get();
 
-      for (var doc in snapshot.docs) {
-        if (doc.data().containsKey('logoURL') && doc['logoURL'] != null) {
-          return doc['logoURL'] as String;
+      if (snapshot.docs.isNotEmpty && snapshot.docs.first.data().containsKey('logoURL')) {
+        final logoURL = snapshot.docs.first['logoURL'];
+        if (logoURL != null) {
+          print('Logo URL found in Firestore for $companyName: $logoURL');
+          return logoURL;
         }
       }
     } catch (e) {
-      print('Error fetching logoURL: $e');
+      print('Error fetching logoURL for $companyName: $e');
     }
 
-    // If no logoURL found, return the external API URL
-    return _getExternalLogoUrl(companyName);
+    final externalUrl = _getExternalLogoUrl(companyName);
+    print('Using external logo URL for $companyName: $externalUrl');
+    return externalUrl;
   }
 
-  // Helper to get external logo URL
   String _getExternalLogoUrl(String companyName) {
     final formattedName = companyName.toLowerCase().replaceAll(' ', '');
-    return 'https://img.logo.dev/$formattedName.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
+    return 'https://img.logo.dev/${formattedName}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
   }
 
   @override
   Widget build(BuildContext context) {
+    print('Building Home widget');
     return Scaffold(
       backgroundColor: const Color.fromRGBO(255, 220, 80, 1),
       bottomNavigationBar: NavigationControl(),
@@ -85,7 +99,6 @@ class _HomeState extends State<Home> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Header
               Center(
                 child: Container(
                   decoration: BoxDecoration(
@@ -104,8 +117,6 @@ class _HomeState extends State<Home> {
                 ),
               ),
               SizedBox(height: 10),
-
-              // Display selected categories and fetch companies dynamically
               for (String category in _selectedCategories) ...[
                 Text(
                   category,
@@ -117,52 +128,56 @@ class _HomeState extends State<Home> {
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return CircularProgressIndicator();
-                    } else if (snapshot.hasError || !snapshot.hasData) {
+                    } else if (snapshot.hasError || !snapshot.hasData || (snapshot.data as List<Map<String, dynamic>>).isEmpty) {
                       return Text(
                         'No companies available',
                         style: TextStyle(color: Colors.white),
                       );
                     }
 
-                    final companies = snapshot.data as List<String>;
+                    final companies = snapshot.data as List<Map<String, dynamic>>;
 
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: companies.map((company) {
+                      children: companies.map((companyData) {
+                        final companyName = companyData['companyName'] as String;
+                        final evidenceLink = companyData['evidenceLink'] as String;
+
                         return FutureBuilder(
-                          future: _getCompanyLogoUrl(company),
+                          future: _getCompanyLogoUrl(companyName),
                           builder: (context, logoSnapshot) {
                             final logoUrl = logoSnapshot.data as String?;
-                            return Column(
-                              children: [
-                                Text(
-                                  toTitleCase(company), // Title-cased company name
-                                  style: TextStyle(color: Colors.white, fontSize: 16),
-                                ),
-                                SizedBox(
-                                  height: 100,
-                                  width: 100,
-                                  child: logoUrl != null
-                                      ? Image.network(
-                                          logoUrl,
-                                          errorBuilder: (context, error, stackTrace) {
-                                            return Center(
-                                              child: Text(
-                                                'No logo',
-                                                style: TextStyle(color: Colors.white, fontSize: 12),
-                                              ),
-                                            );
-                                          },
-                                          fit: BoxFit.contain,
-                                        )
-                                      : Center(
-                                          child: Text(
-                                            'No logo',
-                                            style: TextStyle(color: Colors.white, fontSize: 12),
-                                          ),
-                                        ),
-                                ),
-                              ],
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ResultFalsePage(
+                                            companyName: companyName,
+                                            brandType: 'Recommended Brand',
+                                            category: category,
+                                            link: evidenceLink,
+                                          )),
+                                );
+                              },
+                              child: Column(
+                                children: [
+                                  Text(
+                                    toTitleCase(companyName),
+                                    style: TextStyle(color: Colors.white, fontSize: 16),
+                                  ),
+                                  SizedBox(
+                                    height: 100,
+                                    width: 100,
+                                    child: logoUrl != null
+                                        ? Image.network(
+                                            logoUrl,
+                                            fit: BoxFit.contain,
+                                          )
+                                        : Text('No logo', style: TextStyle(color: Colors.white)),
+                                  ),
+                                ],
+                              ),
                             );
                           },
                         );
@@ -170,12 +185,10 @@ class _HomeState extends State<Home> {
                     );
                   },
                 ),
-                SizedBox(height: 20),
               ],
-
-              // Flash news
               Column(
                 children: [
+                  SizedBox(height: 10),
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
@@ -195,26 +208,13 @@ class _HomeState extends State<Home> {
                     future: Article.fetchArticles('general'),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        }
-
-                        if (snapshot.hasError) {
-                          return Center(child: Text('Failed to load articles.'));
-                        }
-
-                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return Center(child: Text('No articles available.'));
-                        }
-
                         final articles = snapshot.data!;
-
                         return Column(
                           children: [
                             SizedBox(
                               height: 233,
                               child: NewsCard(
-                                article: articles.first, // Safely access the first article
+                                article: articles.first,
                                 backgroundColor: Colors.white,
                               ),
                             ),

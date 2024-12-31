@@ -25,14 +25,20 @@ class ResultTruePage extends StatelessWidget {
 
   Future<List<Map<String, dynamic>>> fetchAlternativeBrands() async {
     try {
-      final QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('barcodes').where('category', isEqualTo: category).where('brandType', isEqualTo: 'Recommended Brand').limit(3).get();
+      final QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('barcodes').where('category', isEqualTo: category).where('brandType', isEqualTo: 'Recommended Brand').get();
 
       final brands = snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
 
       if (brands.isEmpty) {
         debugPrint('No brands found in barcodes collection for category: $category');
+        return [];
       }
-      return brands;
+
+      // Shuffle the list of brands
+      brands.shuffle();
+
+      // Return the first 3 brands after shuffling
+      return brands.take(3).toList();
     } catch (e) {
       debugPrint('Error fetching brands: $e');
       return [];

@@ -13,7 +13,6 @@ export 'package:kyb/pages/search.dart';
 export 'package:kyb/pages/contribute.dart';
 export 'package:kyb/pages/report.dart';
 export 'package:kyb/pages/report_wrongcategory.dart';
-export 'package:kyb/pages/report_misinfo.dart';
 export 'package:kyb/pages/report_wrongclass.dart';
 export 'package:kyb/pages/admin_dashboard.dart';
 export 'package:kyb/pages/admin_brands_report.dart';

@@ -25,7 +25,7 @@ void main() async {
 
   runApp(
     MaterialApp(
-      initialRoute: '/admin_dashboard',
+      initialRoute: '/home',
       routes: {
         '/': (context) => SplashScreen(),
         '/front': (context) => FrontPage(),
@@ -48,7 +48,6 @@ void main() async {
         '/report_wrongclass': (context) => ReportWrongClass(
               companyName: '',
             ),
-        /*'/report_misinfo': (context) => ReportWrongInfo(),*/
         '/admin_dashboard': (context) => AdminDashboardPage(),
         '/admin_new_brand': (context) => AdminContributePage(),
         '/admin_view_reports': (context) => AdminBrandsReport(),

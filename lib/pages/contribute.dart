@@ -83,7 +83,7 @@ class _ContributePageState extends State<ContributePage> {
       final newBarcode = Barcode(
         barcodeNum: barcode,
         companyName: brandName,
-        category: _selectedCategory!,
+        category: _selectedCategory!.toLowerCase(), // Convert category to lowercase
         brandType: _selectedBrandType,
         evidenceLink: evidenceLink,
         approved: false,

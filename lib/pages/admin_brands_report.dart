@@ -117,22 +117,46 @@ class _AdminBrandsReportState extends State<AdminBrandsReport> {
                           // Update Brand Details Button
                           ElevatedButton(
                             onPressed: () {
-                              FirebaseFirestore.instance.collection('barcodes').doc(report.id).get().then((snapshot) {
-                                final data = snapshot.data() as Map<String, dynamic>;
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => EditBrandPage(
-                                            documentId: report.id,
-                                            companyName: data['companyName'] ?? '', // Default to empty string
-                                            brandType: data['brandType'] ?? '',
-                                            category: data['category'] ?? '',
-                                            approved: data['approved'] ?? false, // Fixed to default as false (boolean)
-                                            evidenceLink: data['evidenceLink'] ?? '', // Added evidenceLink field
-                                            logoURL: data['logoURL'] ?? '', // Added logoURL field
-                                            barcodeNum: data['barcodeNum'] ?? '', // Added barcodeNum field
-                                          )),
+                              final String companyName = data['companyName'] ?? ''; // Get company name from the report
+                              if (companyName.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Company name is missing.')),
                                 );
+                                return;
+                              }
+
+                              // Fetch all documents with the same companyName
+                              FirebaseFirestore.instance
+                                  .collection('barcodes')
+                                  .where('companyName', isEqualTo: companyName) // Query by companyName
+                                  .get()
+                                  .then((querySnapshot) {
+                                if (querySnapshot.docs.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('No matching brand details found.')),
+                                  );
+                                  return;
+                                }
+
+                                for (var doc in querySnapshot.docs) {
+                                  final data = doc.data() as Map<String, dynamic>;
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => EditBrandPage(
+                                        documentId: doc.id,
+                                        companyName: data['companyName'] ?? '',
+                                        brandType: data['brandType'] ?? '',
+                                        category: data['category'] ?? '',
+                                        approved: data['approved'] ?? false,
+                                        evidenceLink: data['link'] ?? '',
+                                        logoURL: data['logoURL'] ?? '',
+                                        barcodeNum: data['barcodeNum'] ?? '',
+                                      ),
+                                    ),
+                                  );
+                                }
                               }).catchError((e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text('Failed to load brand details: $e')),
@@ -142,9 +166,9 @@ class _AdminBrandsReportState extends State<AdminBrandsReport> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
-                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                             ),
-                            child: Text('Update Brand Details'),
+                            child: const Text('Update Brand Details'),
                           ),
                         ],
                       ),

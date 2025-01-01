@@ -9,7 +9,7 @@ class EditBrandPage extends StatefulWidget {
   final bool? approved;
   final String evidenceLink;
   final String logoURL;
-  final String barcodeNum; // Added barcodeNum field
+  final String barcodeNum;
 
   const EditBrandPage({
     super.key,
@@ -20,7 +20,7 @@ class EditBrandPage extends StatefulWidget {
     required this.approved,
     required this.evidenceLink,
     required this.logoURL,
-    required this.barcodeNum, // Required barcodeNum
+    required this.barcodeNum,
   });
 
   @override
@@ -29,22 +29,21 @@ class EditBrandPage extends StatefulWidget {
 
 class _EditBrandPageState extends State<EditBrandPage> {
   late TextEditingController _companyNameController;
-  late TextEditingController _evidenceLinkController; // Renamed controller
-  late TextEditingController _logoURLController; // Updated name
+  late TextEditingController _evidenceLinkController;
+  late TextEditingController _logoURLController;
   bool? _approved;
   late String _selectedCategory;
   late String _selectedBrandType;
+  String? _selectedDocumentId;
+  List<Map<String, dynamic>> _matchingEntries = [];
 
   final List<String> _categories = [
-    'Automotive',
-    'Fashion',
     'Technology',
-    'Manufacturer',
-    'Supermarket',
+    'Fashion',
+    'Household',
     'Cosmetics',
-    'Finance',
-    'F&B',
-    'Entertainment',
+    'Food',
+    'Healthcare',
   ];
 
   final List<String> _brandTypes = [
@@ -55,26 +54,57 @@ class _EditBrandPageState extends State<EditBrandPage> {
   @override
   void initState() {
     super.initState();
+    print("Widget category: ${widget.category}"); // Debug line
+
     _companyNameController = TextEditingController(text: widget.companyName);
-    _evidenceLinkController = TextEditingController(text: widget.evidenceLink); // Set evidence link
-    _logoURLController = TextEditingController(text: widget.logoURL); // Set logo URL
+    _evidenceLinkController = TextEditingController(text: widget.evidenceLink);
+    _logoURLController = TextEditingController(text: widget.logoURL);
     _approved = widget.approved ?? false;
 
+    // Ensure the selected category is set correctly
     _selectedCategory = _categories.contains(widget.category) ? widget.category : _categories.first;
+    print("Selected category after check: $_selectedCategory"); // Debug line
     _selectedBrandType = _brandTypes.contains(widget.brandType) ? widget.brandType : _brandTypes.first;
+
+    fetchMatchingEntries();
+  }
+
+  Future<void> fetchMatchingEntries() async {
+    try {
+      // Querying the 'barcodes' collection to fetch entries matching the companyName
+      final querySnapshot = await FirebaseFirestore.instance.collection('barcodes').where('companyName', isEqualTo: widget.companyName).get();
+
+      setState(() {
+        // Mapping the fetched entries to a list of maps
+        _matchingEntries = querySnapshot.docs.map((doc) {
+          final data = doc.data();
+          data['id'] = doc.id;
+          return data;
+        }).toList();
+
+        // Setting the default selected documentId if available
+        _selectedDocumentId = widget.documentId;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error fetching matching entries: $e')),
+      );
+    }
   }
 
   void _saveChanges() async {
     try {
-      final docRef = FirebaseFirestore.instance.collection('barcodes').doc(widget.documentId);
+      if (_selectedDocumentId == null) return;
+
+      final docRef = FirebaseFirestore.instance.collection('barcodes').doc(_selectedDocumentId);
 
       await docRef.update({
         'companyName': _companyNameController.text,
-        'brandType': _selectedBrandType.toLowerCase(), // Enforce lowercase
-        'category': _selectedCategory.toLowerCase(), // Enforce lowercase
+        'brandType': _selectedBrandType.toLowerCase(),
+        'category': _selectedCategory.toLowerCase(),
         'approved': _approved,
-        'evidenceLink': _evidenceLinkController.text, // Correct field name
-        'logoURL': _logoURLController.text, // Correct field name
+        'evidenceLink': _evidenceLinkController.text,
+        'logoURL': _logoURLController.text,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -103,36 +133,44 @@ class _EditBrandPageState extends State<EditBrandPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Display barcode number (read-only)
-              TextField(
-                controller: TextEditingController(text: widget.barcodeNum),
-                readOnly: true,
+              // Select Entry dropdown for Barcode Number
+              DropdownButtonFormField<String>(
+                value: _selectedDocumentId,
                 decoration: InputDecoration(
-                  labelText: 'Barcode Number',
-                  labelStyle: const TextStyle(color: Colors.black26),
+                  labelText: 'Select Entry',
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                style: const TextStyle(color: Colors.black),
+                items: _matchingEntries.map<DropdownMenuItem<String>>((entry) {
+                  return DropdownMenuItem<String>(
+                    value: entry['id'], // documentId is set as value
+                    child: Text(entry['barcodeNum'] ?? 'Unknown'), // Show barcodeNum or any relevant field
+                  );
+                }).toList(),
+                onChanged: (value) => setState(() {
+                  _selectedDocumentId = value;
+                  // Find the selected entry and set the company name accordingly (optional)
+                  final selectedEntry = _matchingEntries.firstWhere((entry) => entry['id'] == value);
+                  _companyNameController.text = selectedEntry['companyName'] ?? ''; // Optional
+                }),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _companyNameController,
                 decoration: InputDecoration(
                   labelText: 'Company Name',
-                  labelStyle: const TextStyle(color: Colors.black26),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                style: const TextStyle(color: Colors.black),
               ),
               const SizedBox(height: 16),
+              // Brand Type dropdown
               DropdownButtonFormField<String>(
                 value: _selectedBrandType,
                 decoration: InputDecoration(
@@ -143,8 +181,8 @@ class _EditBrandPageState extends State<EditBrandPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                items: _brandTypes.map((brandType) {
-                  return DropdownMenuItem(
+                items: _brandTypes.map<DropdownMenuItem<String>>((String brandType) {
+                  return DropdownMenuItem<String>(
                     value: brandType,
                     child: Text(brandType),
                   );
@@ -154,8 +192,9 @@ class _EditBrandPageState extends State<EditBrandPage> {
                 }),
               ),
               const SizedBox(height: 16),
+              // Category dropdown
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                value: _selectedCategory, // This ensures the selected category is auto-selected
                 decoration: InputDecoration(
                   labelText: 'Category',
                   filled: true,
@@ -164,48 +203,14 @@ class _EditBrandPageState extends State<EditBrandPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                items: _categories.map((category) {
-                  return DropdownMenuItem(
+                items: _categories.map<DropdownMenuItem<String>>((String category) {
+                  return DropdownMenuItem<String>(
                     value: category,
                     child: Text(category),
                   );
                 }).toList(),
                 onChanged: (value) => setState(() {
-                  _selectedCategory = value ?? '';
-                }),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _evidenceLinkController,
-                decoration: InputDecoration(
-                  labelText: 'Evidence Link',
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.black),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _logoURLController,
-                decoration: InputDecoration(
-                  labelText: 'Logo URL',
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                style: const TextStyle(color: Colors.black),
-              ),
-              const SizedBox(height: 16),
-              SwitchListTile(
-                title: const Text('Approved'),
-                value: _approved ?? false,
-                onChanged: (value) => setState(() {
-                  _approved = value;
+                  _selectedCategory = value ?? ''; // Update the selected category
                 }),
               ),
               const SizedBox(height: 16),

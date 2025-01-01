@@ -202,18 +202,27 @@ class ResultTruePage extends StatelessWidget {
               },
             ),
             const SizedBox(height: 20),
-            RichText(
-              text: TextSpan(
-                text: 'Logos provided by ',
-                style: const TextStyle(color: Colors.black),
-                children: [
-                  TextSpan(
-                    text: 'Logo.dev',
-                    style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
-                    recognizer: TapGestureRecognizer()..onTap = () {},
-                  ),
-                ],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  child: const Text('View Proof'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ReportPage(
+                          companyName: companyName,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Report'),
+                ),
+              ],
             ),
           ],
         ),

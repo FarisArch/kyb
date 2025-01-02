@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:kyb/pages/pages.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class ResultFalsePage extends StatelessWidget {
   final String companyName;
@@ -78,7 +79,7 @@ class ResultFalsePage extends StatelessWidget {
                 ),
                 child: SingleChildScrollView(
                   child: Text(
-                    "${toTitleCase(companyName)} is categorized under ${toTitleCase(category)}. Brand type: ${toTitleCase(brandType)}.\n\nEvidence: $link",
+                    "${toTitleCase(companyName)}\nBrand Type :  ${toTitleCase(brandType)}\nCategory: ${toTitleCase(category)}.",
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 16),
                   ),
@@ -87,35 +88,39 @@ class ResultFalsePage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Proof for $companyName'),
-                          content: Text('Proof link: $link'),
-                          actions: [
-                            TextButton(
-                              child: const Text('OK'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
+                    if (link.isEmpty || link == 'No evidence') {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('No link available for proof.')),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Scaffold(
+                            appBar: AppBar(title: const Text('Proof')),
+                            body: InAppWebView(
+                              initialUrlRequest: URLRequest(url: WebUri(link)),
                             ),
-                          ],
-                        );
-                      },
-                    );
+                          ),
+                        ),
+                      );
+                    }
                   },
-                  child: const Text('View proof'),
+                  child: const Text('View Proof'),
                 ),
-                const SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: () {
-                    MaterialPageRoute(
-                      builder: (context) => ReportPage(companyName: companyName),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ReportPage(
+                          companyName: companyName,
+                        ),
+                      ),
                     );
                   },
                   child: const Text('Report'),

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:kyb/pages/pages.dart';
 import 'package:kyb/pages/result_false.dart';
 
@@ -34,10 +34,7 @@ class ResultTruePage extends StatelessWidget {
         return [];
       }
 
-      // Shuffle the list of brands
       brands.shuffle();
-
-      // Return the first 3 brands after shuffling
       return brands.take(3).toList();
     } catch (e) {
       debugPrint('Error fetching brands: $e');
@@ -206,7 +203,25 @@ class ResultTruePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    if (link.isEmpty || link == 'No evidence') {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('No link available for proof.')),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Scaffold(
+                            appBar: AppBar(title: const Text('Proof')),
+                            body: InAppWebView(
+                              initialUrlRequest: URLRequest(url: WebUri(link)),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                  },
                   child: const Text('View Proof'),
                 ),
                 ElevatedButton(

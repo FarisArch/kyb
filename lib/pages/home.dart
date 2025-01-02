@@ -205,7 +205,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   FutureBuilder(
-                    future: Article.fetchArticles('general'),
+                    future: Article.fetchArticles(page: 1),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         final articles = snapshot.data!;

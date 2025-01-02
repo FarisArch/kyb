@@ -42,12 +42,12 @@ class Article {
     };
   }
 
-  static Future<List<Article>> fetchArticles(String category) async {
+  static Future<List<Article>> fetchArticles({int page = 1}) async {
     final now = DateTime.now();
-    final yesterday = now.subtract(Duration(days: 1));
-    final formattedDate = '${yesterday.year}-${yesterday.month.toString().padLeft(2, '0')}-${yesterday.day.toString().padLeft(2, '0')}';
+    final formattedDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
 
-    final response = await http.get(Uri.parse('https://newsapi.org/v2/everything?q=$category&from=$formattedDate&sortBy=popularity&apiKey=$news_api_key&pageSize=2'));
+    // API call to fetch articles related to "boycott" from today's date
+    final response = await http.get(Uri.parse('https://newsapi.org/v2/top-headlines?sources=al-jazeera-english&from=$formattedDate&sortBy=popularity&apiKey=$news_api_key&pageSize=10&page=$page'));
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);

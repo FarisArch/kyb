@@ -1,14 +1,12 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:kyb/pages/pages.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-class ResultFalsePage extends StatelessWidget {
+class ResultFalsePage extends StatefulWidget {
   final String companyName;
   final String brandType;
   final String category;
   final String link;
-  final String? logoURL;
 
   const ResultFalsePage({
     super.key,
@@ -16,46 +14,79 @@ class ResultFalsePage extends StatelessWidget {
     required this.brandType,
     required this.category,
     required this.link,
-    this.logoURL,
   });
 
-  String toTitleCase(String text) {
-    if (text.isEmpty) return text;
-    return text
-        .split(' ') // Split the text by spaces
-        .map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase()) // Capitalize each word
-        .join(' '); // Join them back with spaces
+  @override
+  _ResultFalsePageState createState() => _ResultFalsePageState();
+}
+
+class _ResultFalsePageState extends State<ResultFalsePage> {
+  String? _logoURL;
+
+  @override
+  void initState() {
+    super.initState();
+    _getCompanyLogoUrl(widget.companyName); // Fetch the logo URL when the page is initialized
+  }
+
+  Future<void> _getCompanyLogoUrl(String companyName) async {
+    print('Fetching logo URL for company: $companyName');
+    try {
+      final snapshot = await FirebaseFirestore.instance.collection('barcodes').where('companyName', isEqualTo: companyName).where('approved', isEqualTo: true).where('brandType', isEqualTo: 'Recommended Brand').limit(1).get();
+
+      if (snapshot.docs.isNotEmpty && snapshot.docs.first.data().containsKey('logoURL')) {
+        final logoURL = snapshot.docs.first['logoURL'];
+        if (logoURL != null) {
+          print('Logo URL found in Firestore for $companyName: $logoURL');
+          setState(() {
+            _logoURL = logoURL; // Set the fetched logo URL to state
+          });
+        }
+      } else {
+        final externalUrl = _getExternalLogoUrl(companyName);
+        setState(() {
+          _logoURL = externalUrl; // Set the fallback URL if no logo is found in Firestore
+        });
+        print('Using external logo URL for $companyName: $externalUrl');
+      }
+    } catch (e) {
+      print('Error fetching logo URL for $companyName: $e');
+    }
+  }
+
+  String _getExternalLogoUrl(String companyName) {
+    final formattedName = companyName.toLowerCase().replaceAll(' ', '');
+    return 'https://img.logo.dev/$formattedName.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
   }
 
   @override
   Widget build(BuildContext context) {
-    // Generate fallback logo URL based on company name
-    final String fallbackLogoUrl = 'https://img.logo.dev/${companyName.toLowerCase().replaceAll(' ', '')}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
-
     return Scaffold(
       backgroundColor: Colors.green[100],
       appBar: AppBar(
         backgroundColor: Colors.green,
-        title: Text(companyName),
+        title: Text(widget.companyName),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.network(
-              logoURL?.isNotEmpty == true ? logoURL! : fallbackLogoUrl, // Prioritize logoURL, fallback if null
-              height: 100,
-              errorBuilder: (context, error, stackTrace) {
-                return Image.asset(
-                  'assets/placeholder_logo.png', // Placeholder logo if both fail
-                  height: 100,
-                );
-              },
-            ),
+            _logoURL != null
+                ? Image.network(
+                    _logoURL!,
+                    height: 100,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/placeholder_logo.png', // Placeholder logo if both fail
+                        height: 100,
+                      );
+                    },
+                  )
+                : const CircularProgressIndicator(), // Show loading indicator if logoURL is null
             const SizedBox(height: 20),
             Text(
-              '${toTitleCase(companyName)} is safe!',
+              '${widget.companyName} is safe!',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -79,7 +110,7 @@ class ResultFalsePage extends StatelessWidget {
                 ),
                 child: SingleChildScrollView(
                   child: Text(
-                    "${toTitleCase(companyName)}\nBrand Type :  ${toTitleCase(brandType)}\nCategory: ${toTitleCase(category)}.",
+                    "Details about ${widget.companyName}\nBrand Type: ${widget.brandType}\nCategory: ${widget.category}",
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 16),
                   ),
@@ -92,7 +123,7 @@ class ResultFalsePage extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    if (link.isEmpty || link == 'No evidence') {
+                    if (widget.link.isEmpty || widget.link == 'No evidence') {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('No link available for proof.')),
                       );
@@ -103,7 +134,7 @@ class ResultFalsePage extends StatelessWidget {
                           builder: (context) => Scaffold(
                             appBar: AppBar(title: const Text('Proof')),
                             body: InAppWebView(
-                              initialUrlRequest: URLRequest(url: WebUri(link)),
+                              initialUrlRequest: URLRequest(url: WebUri(widget.link)),
                             ),
                           ),
                         ),
@@ -112,34 +143,7 @@ class ResultFalsePage extends StatelessWidget {
                   },
                   child: const Text('View Proof'),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ReportPage(
-                          companyName: companyName,
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text('Report'),
-                ),
               ],
-            ),
-            const SizedBox(height: 20),
-            RichText(
-              text: TextSpan(
-                text: 'Logos provided by ',
-                style: const TextStyle(color: Colors.black),
-                children: [
-                  TextSpan(
-                    text: 'Logo.dev',
-                    style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
-                    recognizer: TapGestureRecognizer()..onTap = () async {},
-                  ),
-                ],
-              ),
             ),
           ],
         ),

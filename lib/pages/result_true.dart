@@ -23,6 +23,32 @@ class ResultTruePage extends StatelessWidget {
     return text.split(' ').map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase()).join(' ');
   }
 
+  Future<String?> _getCompanyLogoUrl(String companyName) async {
+    print('Fetching logo URL for company: $companyName');
+    try {
+      final snapshot = await FirebaseFirestore.instance.collection('barcodes').where('companyName', isEqualTo: companyName).where('approved', isEqualTo: true).where('brandType', isEqualTo: 'Recommended Brand').limit(1).get();
+
+      if (snapshot.docs.isNotEmpty && snapshot.docs.first.data().containsKey('logoURL')) {
+        final logoURL = snapshot.docs.first['logoURL'];
+        if (logoURL != null) {
+          print('Logo URL found in Firestore for $companyName: $logoURL');
+          return logoURL;
+        }
+      }
+    } catch (e) {
+      print('Error fetching logoURL for $companyName: $e');
+    }
+
+    final externalUrl = _getExternalLogoUrl(companyName);
+    print('Using external logo URL for $companyName: $externalUrl');
+    return externalUrl;
+  }
+
+  String _getExternalLogoUrl(String companyName) {
+    final formattedName = companyName.toLowerCase().replaceAll(' ', '');
+    return 'https://img.logo.dev/${formattedName}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
+  }
+
   Future<List<Map<String, dynamic>>> fetchAlternativeBrands() async {
     try {
       final QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('barcodes').where('category', isEqualTo: category).where('brandType', isEqualTo: 'Recommended Brand').get();
@@ -44,8 +70,6 @@ class ResultTruePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String logoUrl = 'https://img.logo.dev/${companyName.toLowerCase().replaceAll(' ', '')}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
-
     return Scaffold(
       backgroundColor: Colors.red[100],
       appBar: AppBar(
@@ -56,17 +80,31 @@ class ResultTruePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.network(
-              logoUrl,
-              height: 100,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  height: 100,
-                  width: 100,
-                  alignment: Alignment.center,
-                  color: Colors.grey[300],
-                  child: const Icon(Icons.image_not_supported, size: 60, color: Colors.grey),
-                );
+            FutureBuilder<String?>(
+              future: _getCompanyLogoUrl(companyName),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return const Text('Failed to load logo');
+                } else if (snapshot.hasData && snapshot.data != null) {
+                  final logoUrl = snapshot.data!;
+                  return Image.network(
+                    logoUrl,
+                    height: 100,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 100,
+                        width: 100,
+                        alignment: Alignment.center,
+                        color: Colors.grey[300],
+                        child: const Icon(Icons.image_not_supported, size: 60, color: Colors.grey),
+                      );
+                    },
+                  );
+                } else {
+                  return const Text('No logo available');
+                }
               },
             ),
             const SizedBox(height: 20),
@@ -95,7 +133,7 @@ class ResultTruePage extends StatelessWidget {
                 ),
                 child: SingleChildScrollView(
                   child: Text(
-                    "Details about ${toTitleCase(companyName)}'s boycott regarding ${toTitleCase(brandType)} in the ${toTitleCase(category)} category. Link for proof: $link",
+                    "Details about ${toTitleCase(companyName)}\nBrand Type: ${toTitleCase(brandType)}\nCategory: ${toTitleCase(category)}",
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 16),
                   ),

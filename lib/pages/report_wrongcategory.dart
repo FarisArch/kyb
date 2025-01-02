@@ -11,6 +11,7 @@ class ReportWrongCategory extends StatefulWidget {
 }
 
 class _ReportWrongCategoryState extends State<ReportWrongCategory> {
+  String? selectedBarcode;
   String? selectedCategory;
   final TextEditingController linkController = TextEditingController();
 
@@ -22,31 +23,43 @@ class _ReportWrongCategoryState extends State<ReportWrongCategory> {
     'Cosmetics',
     'Food',
     'Healthcare',
+    'Automotive', // Added category
   ];
+
+  // Fetch the barcode entries for the company
+  Future<List<String>> _fetchBarcodes() async {
+    try {
+      final QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('barcodes').where('companyName', isEqualTo: widget.companyName).get();
+
+      return snapshot.docs.map((doc) => doc['barcodeNum'] as String).toList();
+    } catch (error) {
+      // Handle the error and return an empty list if fetching fails
+      print('Error fetching barcodes: $error');
+      return [];
+    }
+  }
 
   // Submit the form and save data to Firebase
   Future<void> _submitForm() async {
-    if (selectedCategory != null && linkController.text.isNotEmpty) {
+    if (selectedBarcode != null && selectedCategory != null && linkController.text.isNotEmpty) {
       try {
         await FirebaseFirestore.instance.collection('report_list').add({
-          'companyName': widget.companyName, // Save the company NAME
-          'category': selectedCategory, // Save the selected category
-          'link': linkController.text, // Save the evidence link
-          'timestamp': FieldValue.serverTimestamp(), // Save the submission time
+          'companyName': widget.companyName,
+          'barcodeNum': selectedBarcode, // Add the barcodeNum field
+          'category': selectedCategory,
+          'link': linkController.text,
+          'timestamp': FieldValue.serverTimestamp(),
         });
 
-        // Navigate to a success page after successful submission
         Navigator.pushNamed(context, '/successfulReport');
       } catch (error) {
-        // Show an error message if submission fails
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error submitting report: $error')),
         );
       }
     } else {
-      // Show an error message if any field is empty
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select a category and provide a link.')),
+        SnackBar(content: Text('Please select a barcode, category, and provide a link.')),
       );
     }
   }
@@ -77,6 +90,42 @@ class _ReportWrongCategoryState extends State<ReportWrongCategory> {
               ),
             ),
             SizedBox(height: 40),
+            // Dropdown for Barcode selection
+            FutureBuilder<List<String>>(
+              future: _fetchBarcodes(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error fetching barcodes');
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Text('No barcodes available for this company');
+                }
+
+                final barcodes = snapshot.data!;
+
+                return DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: 'Select Barcode',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.qr_code), // Corrected here
+                  ),
+                  value: selectedBarcode,
+                  items: barcodes.map((barcode) {
+                    return DropdownMenuItem(
+                      value: barcode,
+                      child: Text(barcode),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedBarcode = value;
+                    });
+                  },
+                );
+              },
+            ),
+            SizedBox(height: 20),
             // Dropdown for Category selection
             DropdownButtonFormField<String>(
               decoration: InputDecoration(

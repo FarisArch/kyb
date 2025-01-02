@@ -6,6 +6,7 @@ import 'package:kyb/pages/pages.dart';
 import 'package:kyb/pages/result_false.dart';
 import 'package:kyb/models/article.dart';
 import 'package:kyb/pages/news_card.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -213,9 +214,33 @@ class _HomeState extends State<Home> {
                           children: [
                             SizedBox(
                               height: 233,
-                              child: NewsCard(
-                                article: articles.first,
-                                backgroundColor: Colors.white,
+                              child: GestureDetector(
+                                onTap: () {
+                                  // When the news card is tapped, open the URL
+                                  final articleUrl = articles.first.url; // Assuming 'url' is part of your Article model
+                                  if (articleUrl != null && articleUrl.isNotEmpty) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => Scaffold(
+                                          appBar: AppBar(title: Text('News Proof')),
+                                          body: InAppWebView(
+                                            initialUrlRequest: URLRequest(url: WebUri(articleUrl)),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    // Handle case where URL is missing or empty
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('No URL available for the news.')),
+                                    );
+                                  }
+                                },
+                                child: NewsCard(
+                                  article: articles.first,
+                                  backgroundColor: Colors.white,
+                                ),
                               ),
                             ),
                           ],

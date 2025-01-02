@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kyb/navigation/navigation_bar.dart';
 import 'package:kyb/models/article.dart'; // Import the Article model
 import 'package:kyb/pages/pages.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class NewsPage extends StatefulWidget {
   const NewsPage({Key? key}) : super(key: key);
@@ -94,9 +95,33 @@ class _NewsPageState extends State<NewsPage> {
                         final article = _articles[index]; // Access the corresponding article in the list
                         return Padding(
                           padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-                          child: NewsCard(
-                            article: article,
-                            backgroundColor: Colors.white,
+                          child: GestureDetector(
+                            onTap: () {
+                              // When the news item is tapped, open the article URL in InAppWebView
+                              final articleUrl = article.url; // Assuming 'url' is part of your Article model
+                              if (articleUrl != null && articleUrl.isNotEmpty) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => Scaffold(
+                                      appBar: AppBar(title: Text('News Article')),
+                                      body: InAppWebView(
+                                        initialUrlRequest: URLRequest(url: WebUri(articleUrl)),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                // Handle case where URL is missing or empty
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('No URL available for this article.')),
+                                );
+                              }
+                            },
+                            child: NewsCard(
+                              article: article,
+                              backgroundColor: Colors.white,
+                            ),
                           ),
                         ); // Pass the article data to the NewsCard widget
                       },

@@ -32,35 +32,37 @@ class _SearchPageState extends State<SearchPage> {
   void _searchDatabase(String query) async {
     if (query.isEmpty) {
       setState(() {
-        // Restore the full list if the search query is empty
-        _brandsInCategory = List.from(_allBrandsInCategory);
         _suggestions = [];
       });
       return;
     }
 
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+    });
 
     try {
-      final normalizedQuery = query.toLowerCase();
+      final normalizedQuery = query.toLowerCase(); // Convert query to lowercase
 
-      if (_selectedCategory.isEmpty) {
-        // Default behavior: search database
-        final QuerySnapshot result = await barcodesCollection.where('companyName', isGreaterThanOrEqualTo: normalizedQuery).where('companyName', isLessThanOrEqualTo: '$normalizedQuery\uf8ff').limit(5).get();
+      final QuerySnapshot result = await barcodesCollection.where('companyName', isGreaterThanOrEqualTo: normalizedQuery).where('companyName', isLessThanOrEqualTo: '$normalizedQuery\uf8ff').limit(5).get();
 
-        setState(() {
-          _suggestions = result.docs.map((doc) => (doc.data() as Map<String, dynamic>)['companyName'] as String).toList();
-        });
-      } else {
-        // Filter the _brandsInCategory list when a category is selected
-        setState(() {
-          _brandsInCategory = _allBrandsInCategory.where((brand) => brand.toLowerCase().contains(normalizedQuery)).toList();
-        });
-      }
+      // Use a Set to ensure no duplicate company names
+      Set<String> uniqueCompanies = {};
+      result.docs.forEach((doc) {
+        uniqueCompanies.add((doc.data() as Map<String, dynamic>)['companyName'] as String);
+      });
+
+      setState(() {
+        _suggestions = uniqueCompanies.toList(); // Convert Set back to List for display
+      });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error searching database: $e')),
+      );
     } finally {
-      setState(() => _isLoading = false);
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 

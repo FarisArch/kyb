@@ -35,8 +35,14 @@ class _AdminBrandsUpdateState extends State<AdminBrandsUpdate> {
 
       final QuerySnapshot result = await barcodesCollection.where('companyName', isGreaterThanOrEqualTo: normalizedQuery).where('companyName', isLessThanOrEqualTo: '$normalizedQuery\uf8ff').limit(5).get();
 
+      // Use a Set to ensure no duplicate company names
+      Set<String> uniqueCompanies = {};
+      result.docs.forEach((doc) {
+        uniqueCompanies.add((doc.data() as Map<String, dynamic>)['companyName'] as String);
+      });
+
       setState(() {
-        _suggestions = result.docs.map((doc) => (doc.data() as Map<String, dynamic>)['companyName'] as String).toList();
+        _suggestions = uniqueCompanies.toList(); // Convert Set back to List for display
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

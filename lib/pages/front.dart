@@ -78,48 +78,48 @@ class _FrontPageState extends State<FrontPage> {
               ),
               child: Text('Create an account'),
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _isLoading
-                  ? null // Disable the button while loading
-                  : () async {
-                      setState(() {
-                        _isLoading = true; // Start loading
-                      });
+            // SizedBox(height: 20),
+            // ElevatedButton(
+            //   onPressed: _isLoading
+            //       ? null // Disable the button while loading
+            //       : () async {
+            //           setState(() {
+            //             _isLoading = true; // Start loading
+            //           });
 
-                      try {
-                        // Sign in as guest only if not already signed in
-                        final user = FirebaseAuth.instance.currentUser;
-                        if (user == null || !user.isAnonymous) {
-                          await FirebaseAuth.instance.signInAnonymously();
-                        }
-                        // Navigate to home once signed in
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          Navigator.pushReplacementNamed(context, '/home');
-                        });
-                      } catch (e) {
-                        print("Error signing in as guest: $e");
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error signing in as guest: $e')),
-                        );
-                      } finally {
-                        setState(() {
-                          _isLoading = false; // Stop loading after the sign-in process
-                        });
-                      }
-                    },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: const Color.fromARGB(240, 255, 220, 80),
-                backgroundColor: Colors.white,
-                minimumSize: Size(260, 60),
-                textStyle: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              child: _isLoading
-                  ? CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow),
-                    )
-                  : Text('Guest Mode'),
-            ),
+            //           try {
+            //             // Sign in as guest only if not already signed in
+            //             final user = FirebaseAuth.instance.currentUser;
+            //             if (user == null || !user.isAnonymous) {
+            //               await FirebaseAuth.instance.signInAnonymously();
+            //             }
+            //             // Navigate to home once signed in
+            //             WidgetsBinding.instance.addPostFrameCallback((_) {
+            //               Navigator.pushReplacementNamed(context, '/home');
+            //             });
+            //           } catch (e) {
+            //             print("Error signing in as guest: $e");
+            //             ScaffoldMessenger.of(context).showSnackBar(
+            //               SnackBar(content: Text('Error signing in as guest: $e')),
+            //             );
+            //           } finally {
+            //             setState(() {
+            //               _isLoading = false; // Stop loading after the sign-in process
+            //             });
+            //           }
+            //         },
+            //   style: ElevatedButton.styleFrom(
+            //     foregroundColor: const Color.fromARGB(240, 255, 220, 80),
+            //     backgroundColor: Colors.white,
+            //     minimumSize: Size(260, 60),
+            //     textStyle: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+            //   ),
+            //   child: _isLoading
+            //       ? CircularProgressIndicator(
+            //           valueColor: AlwaysStoppedAnimation<Color>(Colors.yellow),
+            //         )
+            //       : Text('Guest Mode'),
+            // ),
           ],
         ),
       ),

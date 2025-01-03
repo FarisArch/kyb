@@ -54,16 +54,15 @@ class _EditBrandPageState extends State<EditBrandPage> {
   @override
   void initState() {
     super.initState();
-    print("Widget category: ${widget.category}"); // Debug line
 
+    // Initializing controllers with existing values
     _companyNameController = TextEditingController(text: widget.companyName);
     _evidenceLinkController = TextEditingController(text: widget.evidenceLink);
     _logoURLController = TextEditingController(text: widget.logoURL);
     _approved = widget.approved ?? false;
 
-    // Ensure the selected category is set correctly
+    // Ensure the selected category and brand type are set correctly
     _selectedCategory = _categories.contains(widget.category) ? widget.category : _categories.first;
-    print("Selected category after check: $_selectedCategory"); // Debug line
     _selectedBrandType = _brandTypes.contains(widget.brandType) ? widget.brandType : _brandTypes.first;
 
     fetchMatchingEntries();
@@ -71,18 +70,14 @@ class _EditBrandPageState extends State<EditBrandPage> {
 
   Future<void> fetchMatchingEntries() async {
     try {
-      // Querying the 'barcodes' collection to fetch entries matching the companyName
       final querySnapshot = await FirebaseFirestore.instance.collection('barcodes').where('companyName', isEqualTo: widget.companyName).get();
 
       setState(() {
-        // Mapping the fetched entries to a list of maps
         _matchingEntries = querySnapshot.docs.map((doc) {
           final data = doc.data();
           data['id'] = doc.id;
           return data;
         }).toList();
-
-        // Setting the default selected documentId if available
         _selectedDocumentId = widget.documentId;
       });
     } catch (e) {
@@ -98,13 +93,14 @@ class _EditBrandPageState extends State<EditBrandPage> {
 
       final docRef = FirebaseFirestore.instance.collection('barcodes').doc(_selectedDocumentId);
 
+      // Only update fields if the user provides new values
       await docRef.update({
         'companyName': _companyNameController.text,
-        'brandType': _selectedBrandType.toLowerCase(),
+        'brandType': _selectedBrandType, // Ensure this is exactly the selected value
         'category': _selectedCategory.toLowerCase(),
         'approved': _approved,
-        'evidenceLink': _evidenceLinkController.text,
-        'logoURL': _logoURLController.text,
+        'evidenceLink': _evidenceLinkController.text.isNotEmpty ? _evidenceLinkController.text : widget.evidenceLink, // Don't overwrite if empty
+        'logoURL': _logoURLController.text.isNotEmpty ? _logoURLController.text : widget.logoURL, // Don't overwrite if empty
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -133,7 +129,7 @@ class _EditBrandPageState extends State<EditBrandPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Select Entry dropdown for Barcode Number
+              // Barcode dropdown
               DropdownButtonFormField<String>(
                 value: _selectedDocumentId,
                 decoration: InputDecoration(
@@ -146,18 +142,18 @@ class _EditBrandPageState extends State<EditBrandPage> {
                 ),
                 items: _matchingEntries.map<DropdownMenuItem<String>>((entry) {
                   return DropdownMenuItem<String>(
-                    value: entry['id'], // documentId is set as value
-                    child: Text(entry['barcodeNum'] ?? 'Unknown'), // Show barcodeNum or any relevant field
+                    value: entry['id'],
+                    child: Text(entry['barcodeNum'] ?? 'Unknown'),
                   );
                 }).toList(),
                 onChanged: (value) => setState(() {
                   _selectedDocumentId = value;
-                  // Find the selected entry and set the company name accordingly (optional)
                   final selectedEntry = _matchingEntries.firstWhere((entry) => entry['id'] == value);
-                  _companyNameController.text = selectedEntry['companyName'] ?? ''; // Optional
+                  _companyNameController.text = selectedEntry['companyName'] ?? '';
                 }),
               ),
               const SizedBox(height: 16),
+              // Company Name TextField
               TextField(
                 controller: _companyNameController,
                 decoration: InputDecoration(
@@ -181,7 +177,7 @@ class _EditBrandPageState extends State<EditBrandPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                items: _brandTypes.map<DropdownMenuItem<String>>((String brandType) {
+                items: _brandTypes.map<DropdownMenuItem<String>>((brandType) {
                   return DropdownMenuItem<String>(
                     value: brandType,
                     child: Text(brandType),
@@ -194,7 +190,7 @@ class _EditBrandPageState extends State<EditBrandPage> {
               const SizedBox(height: 16),
               // Category dropdown
               DropdownButtonFormField<String>(
-                value: _selectedCategory, // This ensures the selected category is auto-selected
+                value: _selectedCategory,
                 decoration: InputDecoration(
                   labelText: 'Category',
                   filled: true,
@@ -203,15 +199,28 @@ class _EditBrandPageState extends State<EditBrandPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                items: _categories.map<DropdownMenuItem<String>>((String category) {
+                items: _categories.map<DropdownMenuItem<String>>((category) {
                   return DropdownMenuItem<String>(
                     value: category,
                     child: Text(category),
                   );
                 }).toList(),
                 onChanged: (value) => setState(() {
-                  _selectedCategory = value ?? ''; // Update the selected category
+                  _selectedCategory = value ?? '';
                 }),
+              ),
+              const SizedBox(height: 16),
+              // Evidence Link TextField
+              TextField(
+                controller: _evidenceLinkController,
+                decoration: InputDecoration(
+                  labelText: 'Evidence Link',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(

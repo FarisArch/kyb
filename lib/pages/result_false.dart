@@ -86,7 +86,7 @@ class _ResultFalsePageState extends State<ResultFalsePage> {
                 : const CircularProgressIndicator(), // Show loading indicator if logoURL is null
             const SizedBox(height: 20),
             Text(
-              '${widget.companyName} is safe!',
+              '${widget.companyName} is recommended!',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,

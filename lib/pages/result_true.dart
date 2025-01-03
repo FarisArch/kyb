@@ -109,7 +109,7 @@ class ResultTruePage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              '${toTitleCase(companyName)} is boycotted!',
+              '${toTitleCase(companyName)} is not recommended!',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,

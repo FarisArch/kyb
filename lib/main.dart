@@ -19,13 +19,11 @@ void main() async {
     ),
   );
 
-  FirebaseFirestore.instance.settings = Settings(
-    persistenceEnabled: true,
-  );
+  FirebaseFirestore.instance.settings = Settings(persistenceEnabled: true);
 
   runApp(
     MaterialApp(
-      initialRoute: '/search',
+      initialRoute: '/scan',
       routes: {
         '/': (context) => SplashScreen(),
         '/front': (context) => FrontPage(),

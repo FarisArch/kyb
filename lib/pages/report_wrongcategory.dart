@@ -23,7 +23,6 @@ class _ReportWrongCategoryState extends State<ReportWrongCategory> {
     'Cosmetics',
     'Food',
     'Healthcare',
-    'Automotive', // Added category
   ];
 
   // Fetch the barcode entries for the company

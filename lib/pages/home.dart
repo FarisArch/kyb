@@ -7,6 +7,7 @@ import 'package:kyb/pages/result_false.dart';
 import 'package:kyb/models/article.dart';
 import 'package:kyb/pages/news_card.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
 
 class Home extends StatefulWidget {
   @override
@@ -25,13 +26,12 @@ class _HomeState extends State<Home> {
 
   late final List<String> _selectedCategories = _getCategoriesForToday();
 
-  // Method to get two categories based on the current day
   List<String> _getCategoriesForToday() {
     final now = DateTime.now();
     final dayOfWeek = now.weekday;
     final random = Random(dayOfWeek);
     final shuffledCategories = List<String>.from(_categories)..shuffle(random);
-    print('Selected categories for today: \${shuffledCategories.take(2).toList()}');
+    print('Selected categories for today: ${shuffledCategories.take(2).toList()}');
     return shuffledCategories.take(2).toList();
   }
 
@@ -90,11 +90,36 @@ class _HomeState extends State<Home> {
     return 'https://img.logo.dev/${formattedName}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
   }
 
+  // Logout method
+  void _logout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacementNamed(context, '/front'); // Navigate to login page
+    } catch (e) {
+      print("Error signing out: $e");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error signing out: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     print('Building Home widget');
+
+    // Check if the user is logged in
+    final User? user = FirebaseAuth.instance.currentUser;
+    final bool isGuest = user == null; // If no user is logged in, treat as guest
+    print("User is logged in: ${!isGuest}"); // Log whether the user is a guest
+
     return Scaffold(
       backgroundColor: const Color.fromRGBO(255, 220, 80, 1),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.exit_to_app, color: Colors.white), // Exit icon button
+          onPressed: _logout,
+        ),
+      ),
       bottomNavigationBar: NavigationControl(),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -150,16 +175,22 @@ class _HomeState extends State<Home> {
                             final logoUrl = logoSnapshot.data as String?;
                             return GestureDetector(
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
+                                if (isGuest) {
+                                  print('Guest attempted to view restricted content for company: $companyName');
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please log in to view more details.')));
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
                                       builder: (context) => ResultFalsePage(
-                                            companyName: companyName,
-                                            brandType: 'Recommended Brand',
-                                            category: category,
-                                            link: evidenceLink,
-                                          )),
-                                );
+                                        companyName: companyName,
+                                        brandType: 'Recommended Brand',
+                                        category: category,
+                                        link: evidenceLink,
+                                      ),
+                                    ),
+                                  );
+                                }
                               },
                               child: Column(
                                 children: [
@@ -216,8 +247,7 @@ class _HomeState extends State<Home> {
                               height: 233,
                               child: GestureDetector(
                                 onTap: () {
-                                  // When the news card is tapped, open the URL
-                                  final articleUrl = articles.first.url; // Assuming 'url' is part of your Article model
+                                  final articleUrl = articles.first.url;
                                   if (articleUrl != null && articleUrl.isNotEmpty) {
                                     Navigator.push(
                                       context,
@@ -231,7 +261,6 @@ class _HomeState extends State<Home> {
                                       ),
                                     );
                                   } else {
-                                    // Handle case where URL is missing or empty
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(content: Text('No URL available for the news.')),
                                     );

@@ -44,7 +44,9 @@ class _ContributePageState extends State<ContributePage> {
   void initState() {
     super.initState();
     _brandNameController = TextEditingController(text: widget.prefilledCompanyName ?? '');
-    _barcodeController = TextEditingController(text: widget.prefilledBarcode ?? '');
+
+    // Set default barcode to "No barcode" if it's not provided
+    _barcodeController = TextEditingController(text: widget.prefilledBarcode ?? 'No barcode');
   }
 
   @override
@@ -192,12 +194,12 @@ class _ContributePageState extends State<ContributePage> {
                 SizedBox(height: 15),
                 TextField(
                   controller: _barcodeController,
-                  decoration: _inputDecoration('Barcode / Serial Number', hint: 'Type here'),
+                  decoration: _inputDecoration('Barcode / Serial Number', hint: 'Type here (or "No barcode")'),
                 ),
                 SizedBox(height: 15),
                 TextField(
                   controller: _evidenceLinkController,
-                  decoration: _inputDecoration('Link of Evidences', hint: 'Type here'),
+                  decoration: _inputDecoration('Link of Evidence', hint: 'Type here'),
                 ),
                 SizedBox(height: 30),
                 ElevatedButton(

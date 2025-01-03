@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:kyb/pages/report.dart';
 
 class ResultFalsePage extends StatefulWidget {
   final String companyName;
@@ -18,6 +19,11 @@ class ResultFalsePage extends StatefulWidget {
 
   @override
   _ResultFalsePageState createState() => _ResultFalsePageState();
+}
+
+String toTitleCase(String text) {
+  if (text.isEmpty) return text;
+  return text.split(' ').map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase()).join(' ');
 }
 
 class _ResultFalsePageState extends State<ResultFalsePage> {
@@ -65,7 +71,6 @@ class _ResultFalsePageState extends State<ResultFalsePage> {
       backgroundColor: Colors.green[100],
       appBar: AppBar(
         backgroundColor: Colors.green,
-        title: Text(widget.companyName),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -86,7 +91,7 @@ class _ResultFalsePageState extends State<ResultFalsePage> {
                 : const CircularProgressIndicator(), // Show loading indicator if logoURL is null
             const SizedBox(height: 20),
             Text(
-              '${widget.companyName} is recommended!',
+              '${toTitleCase(widget.companyName)} is recommended!',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -110,7 +115,7 @@ class _ResultFalsePageState extends State<ResultFalsePage> {
                 ),
                 child: SingleChildScrollView(
                   child: Text(
-                    "Details about ${widget.companyName}\nBrand Type: ${widget.brandType}\nCategory: ${widget.category}",
+                    "Details about ${toTitleCase(widget.companyName)}\nBrand Type: ${toTitleCase(widget.brandType)}\nCategory: ${toTitleCase(widget.category)}",
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 16),
                   ),
@@ -142,6 +147,19 @@ class _ResultFalsePageState extends State<ResultFalsePage> {
                     }
                   },
                   child: const Text('View Proof'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ReportPage(
+                          companyName: widget.companyName,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Report'),
                 ),
               ],
             ),

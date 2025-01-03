@@ -115,6 +115,7 @@ class ResultTruePage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: Colors.red[700],
               ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
             Expanded(

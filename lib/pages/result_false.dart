@@ -32,34 +32,40 @@ class _ResultFalsePageState extends State<ResultFalsePage> {
   @override
   void initState() {
     super.initState();
-    _getCompanyLogoUrl(widget.companyName); // Fetch the logo URL when the page is initialized
+    _fetchLogoURL(widget.companyName); // Fetch logo URL during initialization
   }
 
-  Future<void> _getCompanyLogoUrl(String companyName) async {
+  /// Fetch logo URL logic imported from Home page
+  Future<void> _fetchLogoURL(String companyName) async {
     print('Fetching logo URL for company: $companyName');
+
     try {
+      // Query Firestore for logo URL
       final snapshot = await FirebaseFirestore.instance.collection('barcodes').where('companyName', isEqualTo: companyName).where('approved', isEqualTo: true).where('brandType', isEqualTo: 'Recommended Brand').limit(1).get();
 
       if (snapshot.docs.isNotEmpty && snapshot.docs.first.data().containsKey('logoURL')) {
         final logoURL = snapshot.docs.first['logoURL'];
-        if (logoURL != null) {
+        if (logoURL != null && logoURL.isNotEmpty) {
           print('Logo URL found in Firestore for $companyName: $logoURL');
           setState(() {
-            _logoURL = logoURL; // Set the fetched logo URL to state
+            _logoURL = logoURL; // Use Firestore URL if available
           });
+          return;
         }
-      } else {
-        final externalUrl = _getExternalLogoUrl(companyName);
-        setState(() {
-          _logoURL = externalUrl; // Set the fallback URL if no logo is found in Firestore
-        });
-        print('Using external logo URL for $companyName: $externalUrl');
       }
     } catch (e) {
       print('Error fetching logo URL for $companyName: $e');
     }
+
+    // Fallback to external URL
+    final externalUrl = _getExternalLogoUrl(companyName);
+    print('Using external logo URL for $companyName: $externalUrl');
+    setState(() {
+      _logoURL = externalUrl;
+    });
   }
 
+  /// External logo URL generator
   String _getExternalLogoUrl(String companyName) {
     final formattedName = companyName.toLowerCase().replaceAll(' ', '');
     return 'https://img.logo.dev/$formattedName.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
@@ -77,19 +83,23 @@ class _ResultFalsePageState extends State<ResultFalsePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Logo display with placeholder fallback
             _logoURL != null
                 ? Image.network(
                     _logoURL!,
                     height: 100,
                     errorBuilder: (context, error, stackTrace) {
                       return Image.asset(
-                        'assets/placeholder_logo.png', // Placeholder logo if both fail
+                        'assets/placeholder_logo.png', // Placeholder logo if both URLs fail
                         height: 100,
                       );
                     },
                   )
-                : const CircularProgressIndicator(), // Show loading indicator if logoURL is null
+                : const CircularProgressIndicator(), // Loading indicator while fetching
+
             const SizedBox(height: 20),
+
+            // Company info
             Text(
               '${toTitleCase(widget.companyName)} is recommended!',
               style: TextStyle(
@@ -99,6 +109,8 @@ class _ResultFalsePageState extends State<ResultFalsePage> {
               ),
             ),
             const SizedBox(height: 20),
+
+            // Details
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(16.0),
@@ -122,7 +134,10 @@ class _ResultFalsePageState extends State<ResultFalsePage> {
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
+
+            // Buttons for Proof and Report
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [

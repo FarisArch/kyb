@@ -67,22 +67,36 @@ class _HomeState extends State<Home> {
   Future<String?> _getCompanyLogoUrl(String companyName) async {
     print('Fetching logo URL for company: $companyName');
     try {
+      // Fetch the document from Firestore
       final snapshot = await FirebaseFirestore.instance.collection('barcodes').where('companyName', isEqualTo: companyName).where('approved', isEqualTo: true).where('brandType', isEqualTo: 'Recommended Brand').limit(1).get();
 
-      if (snapshot.docs.isNotEmpty && snapshot.docs.first.data().containsKey('logoURL')) {
-        final logoURL = snapshot.docs.first['logoURL'];
-        if (logoURL != null) {
-          print('Logo URL found in Firestore for $companyName: $logoURL');
-          return logoURL;
+      if (snapshot.docs.isNotEmpty) {
+        final data = snapshot.docs.first.data();
+        // Check if 'logoURL' exists and is a valid URL
+        if (data.containsKey('logoURL') && data['logoURL'] != null) {
+          final logoURL = data['logoURL'] as String;
+          if (_isValidUrl(logoURL)) {
+            print('Valid logo URL found in Firestore for $companyName: $logoURL');
+            return logoURL;
+          } else {
+            print('Invalid logo URL found in Firestore for $companyName.');
+          }
         }
       }
     } catch (e) {
       print('Error fetching logoURL for $companyName: $e');
     }
 
-    final externalUrl = _getExternalLogoUrl(companyName);
-    print('Using external logo URL for $companyName: $externalUrl');
-    return externalUrl;
+    // Fallback to the external URL generator
+    final fallbackUrl = _getExternalLogoUrl(companyName);
+    print('Using fallback logo URL for $companyName: $fallbackUrl');
+    return fallbackUrl;
+  }
+
+// Helper function to validate URL format
+  bool _isValidUrl(String url) {
+    final Uri? uri = Uri.tryParse(url);
+    return uri != null && uri.hasScheme && uri.hasAuthority;
   }
 
   String _getExternalLogoUrl(String companyName) {

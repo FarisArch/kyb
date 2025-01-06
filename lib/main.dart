@@ -23,7 +23,7 @@ void main() async {
 
   runApp(
     MaterialApp(
-      initialRoute: '/',
+      initialRoute: '/home',
       routes: {
         '/': (context) => SplashScreen(),
         '/front': (context) => FrontPage(),

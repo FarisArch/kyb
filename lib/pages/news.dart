@@ -94,7 +94,7 @@ class _NewsPageState extends State<NewsPage> {
 
                         final article = _articles[index]; // Access the corresponding article in the list
                         return Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Add horizontal padding
                           child: GestureDetector(
                             onTap: () {
                               // When the news item is tapped, open the article URL in InAppWebView
@@ -123,7 +123,8 @@ class _NewsPageState extends State<NewsPage> {
                               backgroundColor: Colors.white,
                             ),
                           ),
-                        ); // Pass the article data to the NewsCard widget
+                        );
+                        // Pass the article data to the NewsCard widget
                       },
                     ),
             ),

@@ -12,13 +12,24 @@ class ReportWrongClass extends StatefulWidget {
 
 class _ReportWrongClassState extends State<ReportWrongClass> {
   String? selectedBarcode;
+  String? recommendation;
   String? selectedCategory;
   final TextEditingController linkController = TextEditingController();
 
-  // Define the list of ethical classifications
+  // Define recommendation options
+  final List<String> recommendations = [
+    'Recommended',
+    'Not Recommended',
+  ];
+
+  // Define category options
   final List<String> categories = [
-    'Product should be unsafe & unethical',
-    'Product should be safe and ethical',
+    'Technology',
+    'Fashion',
+    'HouseHold',
+    'Cosmetics',
+    'Food',
+    'Healthcare',
   ];
 
   // Fetch the barcodes for the selected company
@@ -35,28 +46,15 @@ class _ReportWrongClassState extends State<ReportWrongClass> {
     }
   }
 
-  // Fetch categories based on the selected barcode
-  Future<List<String>> _fetchCategories() async {
-    try {
-      final QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('barcodes').where('barcodeNum', isEqualTo: selectedBarcode).get();
-
-      final categories = snapshot.docs.map((doc) => doc['category'] as String).toList();
-
-      return categories;
-    } catch (e) {
-      debugPrint('Error fetching categories: $e');
-      return [];
-    }
-  }
-
   // Submit the form and save data to Firebase
   Future<void> _submitForm() async {
-    if (selectedBarcode != null && selectedCategory != null && linkController.text.isNotEmpty) {
+    if (selectedBarcode != null && recommendation != null && selectedCategory != null && linkController.text.isNotEmpty) {
       try {
         await FirebaseFirestore.instance.collection('report_list').add({
           'companyName': widget.companyName, // Save the company name
           'barcodeNum': selectedBarcode, // Save the selected barcode
-          'category': selectedCategory, // Save the selected category
+          'recommendation': recommendation, // Save the recommendation
+          'category': selectedCategory, // Save the category
           'link': linkController.text, // Save the evidence link
           'timestamp': FieldValue.serverTimestamp(), // Save the submission time
         });
@@ -72,7 +70,7 @@ class _ReportWrongClassState extends State<ReportWrongClass> {
     } else {
       // Show an error message if any field is empty
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select a barcode, category, and provide a link.')),
+        SnackBar(content: Text('Please complete all fields.')),
       );
     }
   }
@@ -124,7 +122,7 @@ class _ReportWrongClassState extends State<ReportWrongClass> {
                   decoration: InputDecoration(
                     labelText: 'SELECT BARCODE',
                     border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.qr_code), // Corrected here
+                    prefixIcon: Icon(Icons.qr_code),
                   ),
                   value: selectedBarcode,
                   items: barcodes.map((barcode) {
@@ -136,49 +134,51 @@ class _ReportWrongClassState extends State<ReportWrongClass> {
                   onChanged: (value) {
                     setState(() {
                       selectedBarcode = value;
-                      selectedCategory = null; // Reset category on barcode change
                     });
                   },
                 );
               },
             ),
             SizedBox(height: 20),
-            // Fetch and display the category dropdown
-            FutureBuilder<List<String>>(
-              future: selectedBarcode == null ? Future.value([]) : _fetchCategories(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
-                }
-                if (snapshot.hasError) {
-                  return Text('Error loading categories');
-                }
-
-                final categories = snapshot.data ?? [];
-
-                if (categories.isEmpty) {
-                  return Text('No categories found for selected barcode');
-                }
-
-                return DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    labelText: 'SELECT CATEGORY',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.category),
-                  ),
-                  value: selectedCategory,
-                  items: categories.map((category) {
-                    return DropdownMenuItem(
-                      value: category,
-                      child: Text(category),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedCategory = value;
-                    });
-                  },
+            // Recommendation dropdown
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                labelText: 'RECOMMENDATION',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.thumb_up),
+              ),
+              value: recommendation,
+              items: recommendations.map((rec) {
+                return DropdownMenuItem(
+                  value: rec,
+                  child: Text(rec),
                 );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  recommendation = value;
+                });
+              },
+            ),
+            SizedBox(height: 20),
+            // Category dropdown
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                labelText: 'CATEGORY',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.category),
+              ),
+              value: selectedCategory,
+              items: categories.map((cat) {
+                return DropdownMenuItem(
+                  value: cat,
+                  child: Text(cat),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedCategory = value;
+                });
               },
             ),
             SizedBox(height: 20),

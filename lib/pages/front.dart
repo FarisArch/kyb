@@ -52,7 +52,7 @@ class _FrontPageState extends State<FrontPage> {
               'Know Your Business',
               style: TextStyle(fontSize: 25, color: Colors.white, letterSpacing: 2.5),
             ),
-            SizedBox(height: 40),
+            SizedBox(height: 80),
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(context, '/login');

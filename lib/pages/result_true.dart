@@ -161,7 +161,7 @@ class ResultTruePage extends StatelessWidget {
                 return Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: Colors.blue[50],
+                    color: Colors.green[50],
                     borderRadius: BorderRadius.circular(12.0),
                     boxShadow: [
                       BoxShadow(

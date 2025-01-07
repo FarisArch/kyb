@@ -26,27 +26,44 @@ class ResultTruePage extends StatelessWidget {
   Future<String?> _getCompanyLogoUrl(String companyName) async {
     print('Fetching logo URL for company: $companyName');
     try {
+      // Fetch document from Firestore
       final snapshot = await FirebaseFirestore.instance.collection('barcodes').where('companyName', isEqualTo: companyName).where('approved', isEqualTo: true).where('brandType', isEqualTo: 'Recommended Brand').limit(1).get();
 
-      if (snapshot.docs.isNotEmpty && snapshot.docs.first.data().containsKey('logoURL')) {
-        final logoURL = snapshot.docs.first['logoURL'];
-        if (logoURL != null) {
-          print('Logo URL found in Firestore for $companyName: $logoURL');
-          return logoURL;
+      // Check if the snapshot contains a document
+      if (snapshot.docs.isNotEmpty) {
+        final data = snapshot.docs.first.data();
+
+        // Check if 'logoURL' field is present and valid
+        if (data.containsKey('logoURL') && data['logoURL'] != null) {
+          final logoURL = data['logoURL'] as String;
+          print('Found logoURL in Firestore: $logoURL');
+          if (_isValidUrl(logoURL)) {
+            print('Valid logo URL found in Firestore for $companyName: $logoURL');
+            return logoURL; // Return valid Firestore URL
+          } else {
+            print('Invalid logo URL in Firestore for $companyName.');
+          }
         }
       }
     } catch (e) {
       print('Error fetching logoURL for $companyName: $e');
     }
 
-    final externalUrl = _getExternalLogoUrl(companyName);
-    print('Using external logo URL for $companyName: $externalUrl');
-    return externalUrl;
+    // Fallback to external URL generator
+    final fallbackUrl = _getExternalLogoUrl(companyName);
+    print('Using fallback logo URL for $companyName: $fallbackUrl');
+    return fallbackUrl; // Return fallback URL
   }
 
   String _getExternalLogoUrl(String companyName) {
-    final formattedName = companyName.toLowerCase().replaceAll(' ', '');
+    // Handle company names with apostrophes or special characters
+    final formattedName = companyName.toLowerCase().replaceAll(RegExp(r"[^a-z0-9]+"), "");
     return 'https://img.logo.dev/${formattedName}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
+  }
+
+  bool _isValidUrl(String url) {
+    final uri = Uri.tryParse(url);
+    return uri != null && (uri.scheme == 'http' || uri.scheme == 'https');
   }
 
   Future<List<Map<String, dynamic>>> fetchAlternativeBrands() async {
@@ -190,14 +207,15 @@ class ResultTruePage extends StatelessWidget {
                         itemCount: alternativeBrands.length,
                         itemBuilder: (context, index) {
                           final brand = alternativeBrands[index];
-                          final altLogoUrl = 'https://img.logo.dev/${(brand['companyName'] ?? 'unknown').toLowerCase().replaceAll(' ', '')}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
+                          final brandName = brand['companyName'] ?? 'Unknown';
+
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ResultFalsePage(
-                                    companyName: brand['companyName'] ?? 'Unknown',
+                                    companyName: brandName,
                                     brandType: brand['brandType'] ?? 'Unknown',
                                     category: brand['category'] ?? 'Unknown',
                                     link: brand['link'] ?? 'No link',
@@ -207,23 +225,37 @@ class ResultTruePage extends StatelessWidget {
                             },
                             child: Column(
                               children: [
-                                Image.network(
-                                  altLogoUrl,
-                                  height: 60,
-                                  width: 60,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      height: 60,
-                                      width: 60,
-                                      alignment: Alignment.center,
-                                      color: Colors.grey[300],
-                                      child: const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
-                                    );
+                                FutureBuilder<String?>(
+                                  future: _getCompanyLogoUrl(brandName), // Use _getCompanyLogoUrl for each alternative brand
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState == ConnectionState.waiting) {
+                                      return const CircularProgressIndicator();
+                                    } else if (snapshot.hasError) {
+                                      return const Icon(Icons.image_not_supported, size: 60, color: Colors.grey);
+                                    } else if (snapshot.hasData && snapshot.data != null) {
+                                      final logoUrl = snapshot.data!;
+                                      return Image.network(
+                                        logoUrl,
+                                        height: 60,
+                                        width: 60,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Container(
+                                            height: 60,
+                                            width: 60,
+                                            alignment: Alignment.center,
+                                            color: Colors.grey[300],
+                                            child: const Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+                                          );
+                                        },
+                                      );
+                                    } else {
+                                      return const Icon(Icons.image_not_supported, size: 60, color: Colors.grey);
+                                    }
                                   },
                                 ),
                                 const SizedBox(height: 5),
                                 Text(
-                                  toTitleCase(brand['companyName'] ?? 'Unknown'),
+                                  toTitleCase(brandName),
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(fontSize: 14),
                                 ),
@@ -231,7 +263,7 @@ class ResultTruePage extends StatelessWidget {
                             ),
                           );
                         },
-                      ),
+                      )
                     ],
                   ),
                 );

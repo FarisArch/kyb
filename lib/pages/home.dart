@@ -88,7 +88,7 @@ class _HomeState extends State<Home> {
     }
 
     // Fallback to the external URL generator
-    final fallbackUrl = _getExternalLogoUrl(companyName);
+    final fallbackUrl = _getExternalLogoUrl(null, companyName);
     print('Using fallback logo URL for $companyName: $fallbackUrl');
     return fallbackUrl;
   }
@@ -99,7 +99,18 @@ class _HomeState extends State<Home> {
     return uri != null && uri.hasScheme && uri.hasAuthority;
   }
 
-  String _getExternalLogoUrl(String companyName) {
+  String _getExternalLogoUrl(dynamic logoData, String companyName) {
+    // If logoData is a single string, return it directly
+    if (logoData is String && logoData.isNotEmpty) {
+      return logoData;
+    }
+
+    // If logoData is an array, return the first valid logo URL
+    if (logoData is List && logoData.isNotEmpty) {
+      return logoData.first; // Picks the first logo in the array
+    }
+
+    // Generate a fallback URL based on the company name
     final formattedName = companyName.toLowerCase().replaceAll(' ', '');
     return 'https://img.logo.dev/${formattedName}.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
   }

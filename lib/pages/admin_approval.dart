@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:url_launcher/url_launcher.dart';
 
 class AdminApprovalPage extends StatelessWidget {
   const AdminApprovalPage({super.key});
@@ -29,19 +28,30 @@ class AdminApprovalPage extends StatelessWidget {
             itemCount: documents.length,
             itemBuilder: (context, index) {
               final doc = documents[index];
+              final data = doc.data() as Map<String, dynamic>;
+              final companyName = data['companyName'] ?? 'No Name';
+              final category = data['category'] ?? 'No Category';
+              final logoURL = _getLogoUrl(data);
 
               return Card(
                 margin: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 child: ListTile(
-                  title: Text(doc['companyName'] ?? 'No Name'),
-                  subtitle: Text(doc['category'] ?? 'No Category'),
-                  leading: (doc.data() is Map<String, dynamic> && (doc.data() as Map<String, dynamic>).containsKey('logoURL') && (doc.data() as Map<String, dynamic>)['logoURL'] != null && (doc.data() as Map<String, dynamic>)['logoURL'].isNotEmpty) ? Image.network((doc.data() as Map<String, dynamic>)['logoURL'], width: 50, height: 50) : Icon(Icons.image_not_supported),
+                  title: Text(companyName),
+                  subtitle: Text(category),
+                  leading: logoURL != null
+                      ? Image.network(
+                          logoURL,
+                          width: 50,
+                          height: 50,
+                          errorBuilder: (context, error, stackTrace) => Icon(Icons.image_not_supported), // Fallback icon on error
+                        )
+                      : Icon(Icons.image_not_supported), // Default icon if no logo
                   trailing: IconButton(
                     icon: Icon(Icons.arrow_forward),
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ApprovalDetailPage(doc.id, doc.data() as Map<String, dynamic>),
+                        builder: (context) => ApprovalDetailPage(doc.id, data),
                       ),
                     ),
                   ),
@@ -53,6 +63,27 @@ class AdminApprovalPage extends StatelessWidget {
       ),
     );
   }
+
+  // Logo Logic
+  String? _getLogoUrl(Map<String, dynamic> data) {
+    if (data.containsKey('logoURL') && data['logoURL'] != null) {
+      final logoData = data['logoURL'];
+
+      // Check if logoURL is a string
+      if (logoData is String && logoData.isNotEmpty) {
+        return logoData; // Return the single logo
+      }
+
+      // Check if logoURL is an array and not empty
+      if (logoData is List && logoData.isNotEmpty) {
+        return logoData.first; // Return the first logo in the array
+      }
+    }
+
+    // Fallback URL
+    final companyName = (data['companyName'] ?? '').toLowerCase().replaceAll(' ', '');
+    return 'https://img.logo.dev/$companyName.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
+  }
 }
 
 class ApprovalDetailPage extends StatelessWidget {
@@ -63,6 +94,8 @@ class ApprovalDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final logoURL = _getLogoUrl(data);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Brand Details'),
@@ -95,7 +128,13 @@ class ApprovalDetailPage extends StatelessWidget {
               },
             ),
             SizedBox(height: 20),
-            if (data.containsKey('logoURL') && data['logoURL'] != null && data['logoURL'].isNotEmpty) Image.network(data['logoURL'], height: 100) else Text('No logo available', style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
+            logoURL != null
+                ? Image.network(
+                    logoURL,
+                    height: 100,
+                    errorBuilder: (context, error, stackTrace) => Icon(Icons.image_not_supported), // Fallback
+                  )
+                : Text('No logo available', style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
             Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -124,5 +163,16 @@ class ApprovalDetailPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Logo Logic
+  String? _getLogoUrl(Map<String, dynamic> data) {
+    if (data.containsKey('logoURL') && data['logoURL'] != null && data['logoURL'].isNotEmpty) {
+      return data['logoURL'];
+    } else {
+      // Generate external fallback URL
+      final companyName = (data['companyName'] ?? '').toLowerCase().replaceAll(' ', '');
+      return 'https://img.logo.dev/$companyName.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
+    }
   }
 }

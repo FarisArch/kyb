@@ -167,12 +167,26 @@ class ApprovalDetailPage extends StatelessWidget {
 
   // Logo Logic
   String? _getLogoUrl(Map<String, dynamic> data) {
-    if (data.containsKey('logoURL') && data['logoURL'] != null && data['logoURL'].isNotEmpty) {
-      return data['logoURL'];
-    } else {
-      // Generate external fallback URL
-      final companyName = (data['companyName'] ?? '').toLowerCase().replaceAll(' ', '');
-      return 'https://img.logo.dev/$companyName.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
+    if (data.containsKey('logoURL') && data['logoURL'] != null) {
+      final logoData = data['logoURL'];
+
+      // Check if logoURL is an array
+      if (logoData is List && logoData.isNotEmpty) {
+        // Match the domain with the company's domain in the data
+        final domain = (data['companyName'] ?? '').toLowerCase().replaceAll(' ', '') + '.com';
+
+        // Find the logo by matching the domain
+        final matchedLogo = logoData.firstWhere((logo) => logo['domain'] == domain, orElse: () => null);
+
+        // Return the logo_url if a match is found
+        if (matchedLogo != null) {
+          return matchedLogo['logo_url'];
+        }
+      }
     }
+
+    // Fallback URL (if no match found)
+    final companyName = (data['companyName'] ?? '').toLowerCase().replaceAll(' ', '');
+    return 'https://img.logo.dev/$companyName.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
   }
 }

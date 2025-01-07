@@ -18,6 +18,14 @@ class _AdminBrandsUpdateState extends State<AdminBrandsUpdate> {
   List<String> _suggestions = [];
   final CollectionReference barcodesCollection = FirebaseFirestore.instance.collection('barcodes');
 
+  String toTitleCase(String text) {
+    if (text.isEmpty) return text;
+    return text
+        .split(' ') // Split the text by spaces
+        .map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase()) // Capitalize each word
+        .join(' '); // Join them back with spaces
+  }
+
   void _searchDatabase(String query) async {
     if (query.isEmpty) {
       setState(() {
@@ -186,21 +194,26 @@ class _AdminBrandsUpdateState extends State<AdminBrandsUpdate> {
                   child: ListView.builder(
                     itemCount: _suggestions.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        color: Colors.white,
-                        margin: const EdgeInsets.symmetric(vertical: 4.0),
-                        child: ListTile(
-                          title: Text(
-                            _suggestions[index],
-                            style: TextStyle(
-                              color: Colors.black,
+                      return Column(
+                        children: [
+                          ListTile(
+                            title: Text(
+                              toTitleCase(_suggestions[index]),
+                              style: TextStyle(
+                                color: Colors.black,
+                              ),
                             ),
+                            onTap: () {
+                              _searchController.text = _suggestions[index];
+                              _redirectToDetails(_suggestions[index]);
+                            },
                           ),
-                          onTap: () {
-                            _searchController.text = _suggestions[index];
-                            _redirectToDetails(_suggestions[index]);
-                          },
-                        ),
+                          Divider(
+                            color: Colors.black26,
+                            thickness: 1,
+                            height: 1,
+                          ), // Add separator line after each entry
+                        ],
                       );
                     },
                   ),

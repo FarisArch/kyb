@@ -91,15 +91,29 @@ class _ContributePageState extends State<ContributePage> {
         approved: false,
       );
 
-      bool barcodeExists = await _databaseService.checkBarcodeExists(barcode);
+      print('Checking barcode and company for $brandName and $barcode');
 
-      if (barcodeExists) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Product already exists!')),
-        );
-        return;
+      if (barcode == 'No barcode') {
+        bool companyExists = await _databaseService.checkCompanyExists(brandName);
+        if (companyExists) {
+          print('Company exists: $brandName');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Company already exists!')),
+          );
+          return;
+        }
+      } else {
+        bool barcodeExists = await _databaseService.checkBarcodeExists(barcode);
+        if (barcodeExists) {
+          print('Barcode exists: $barcode');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Product already exists!')),
+          );
+          return;
+        }
       }
 
+      print('Submitting barcode: $barcode');
       await _databaseService.addBarcode(newBarcode);
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -107,6 +121,7 @@ class _ContributePageState extends State<ContributePage> {
       );
       Navigator.pushNamed(context, '/successfulContribute');
     } catch (e) {
+      print('Error during submission: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('An error occurred. Please try again.')),
       );

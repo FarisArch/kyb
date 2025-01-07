@@ -46,7 +46,7 @@ class _AdminContributePageState extends State<AdminContributePage> {
     final contributeBarcode = ContributeBarcode(
       barcodeNum: barcode,
       companyName: brandName,
-      category: _selectedCategory!,
+      category: _selectedCategory!.toLowerCase(),
       brandType: _selectedBrandType!,
       evidenceLink: evidenceLink,
       approved: true,

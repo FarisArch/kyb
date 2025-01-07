@@ -41,7 +41,7 @@ class _ScanPageState extends State<ScanPage> {
         final brandType = doc['brandType'];
         final companyName = doc['companyName'];
         final category = doc['category'];
-        final evidenceLink = doc['link'] ?? 'No evidence';
+        final evidenceLink = doc['evidenceLink'] ?? 'No evidence';
 
         if (brandType == 'Recommended Brand') {
           Navigator.push(

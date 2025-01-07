@@ -18,8 +18,8 @@ class _ReportWrongClassState extends State<ReportWrongClass> {
 
   // Define recommendation options
   final List<String> recommendations = [
-    'Recommended',
-    'Not Recommended',
+    'Recommended Brand',
+    'Non-Recommended Brand',
   ];
 
   // Define category options
@@ -53,7 +53,7 @@ class _ReportWrongClassState extends State<ReportWrongClass> {
         await FirebaseFirestore.instance.collection('report_list').add({
           'companyName': widget.companyName, // Save the company name
           'barcodeNum': selectedBarcode, // Save the selected barcode
-          'recommendation': recommendation, // Save the recommendation
+          'brandType': recommendation, // Save the recommendation
           'category': selectedCategory, // Save the category
           'link': linkController.text, // Save the evidence link
           'timestamp': FieldValue.serverTimestamp(), // Save the submission time

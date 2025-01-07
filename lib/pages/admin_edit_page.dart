@@ -223,6 +223,18 @@ class _EditBrandPageState extends State<EditBrandPage> {
                 ),
               ),
               const SizedBox(height: 16),
+              TextField(
+                controller: _logoURLController,
+                decoration: InputDecoration(
+                  labelText: 'Logo URL',
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _saveChanges,
                 child: const Text('Save Changes'),

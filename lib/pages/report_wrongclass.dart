@@ -26,7 +26,7 @@ class _ReportWrongClassState extends State<ReportWrongClass> {
   final List<String> categories = [
     'Technology',
     'Fashion',
-    'HouseHold',
+    'Household',
     'Cosmetics',
     'Food',
     'Healthcare',
@@ -120,7 +120,7 @@ class _ReportWrongClassState extends State<ReportWrongClass> {
 
                 return DropdownButtonFormField<String>(
                   decoration: InputDecoration(
-                    labelText: 'SELECT BARCODE',
+                    labelText: 'Select Barcode',
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.qr_code),
                   ),
@@ -143,7 +143,7 @@ class _ReportWrongClassState extends State<ReportWrongClass> {
             // Recommendation dropdown
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
-                labelText: 'RECOMMENDATION',
+                labelText: 'Recommendation',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.thumb_up),
               ),
@@ -164,7 +164,7 @@ class _ReportWrongClassState extends State<ReportWrongClass> {
             // Category dropdown
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
-                labelText: 'CATEGORY',
+                labelText: 'Category',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.category),
               ),
@@ -186,7 +186,7 @@ class _ReportWrongClassState extends State<ReportWrongClass> {
             TextFormField(
               controller: linkController,
               decoration: InputDecoration(
-                labelText: 'LINK OF EVIDENCES',
+                labelText: 'Link of Evidence',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.link),
               ),

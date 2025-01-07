@@ -128,7 +128,7 @@ class _ReportWrongCategoryState extends State<ReportWrongCategory> {
             // Dropdown for Category selection
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
-                labelText: 'CATEGORY',
+                labelText: 'Category',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.shopping_cart),
               ),
@@ -150,7 +150,7 @@ class _ReportWrongCategoryState extends State<ReportWrongCategory> {
             TextFormField(
               controller: linkController,
               decoration: InputDecoration(
-                labelText: 'LINK OF EVIDENCES',
+                labelText: 'Link of Evidence',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.link),
               ),

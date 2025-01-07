@@ -93,7 +93,7 @@ class _HomeState extends State<Home> {
     return fallbackUrl;
   }
 
-// Helper function to validate URL format
+  // Helper function to validate URL format
   bool _isValidUrl(String url) {
     final Uri? uri = Uri.tryParse(url);
     return uri != null && uri.hasScheme && uri.hasAuthority;
@@ -167,13 +167,27 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 15), // Increased space
               for (String category in _selectedCategories) ...[
-                Text(
-                  category,
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(255, 220, 80, 1),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Text(
+                      category,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.2, // Adding space between letters
+                      ),
+                    ),
+                  ),
                 ),
-                SizedBox(height: 10),
                 FutureBuilder(
                   future: _fetchCompanies(category),
                   builder: (context, snapshot) {
@@ -185,7 +199,6 @@ class _HomeState extends State<Home> {
                         style: TextStyle(color: Colors.white),
                       );
                     }
-
                     final companies = snapshot.data as List<Map<String, dynamic>>;
 
                     return Row(
@@ -228,9 +241,9 @@ class _HomeState extends State<Home> {
                                     width: 100,
                                     child: logoUrl != null
                                         ? Image.network(
-                                            logoUrl,
-                                            fit: BoxFit.contain,
-                                          )
+                                      logoUrl,
+                                      fit: BoxFit.contain,
+                                    )
                                         : Text('No logo', style: TextStyle(color: Colors.white)),
                                   ),
                                 ],
@@ -243,9 +256,10 @@ class _HomeState extends State<Home> {
                   },
                 ),
               ],
+              SizedBox(height: 10),
               Column(
                 children: [
-                  SizedBox(height: 10),
+                  SizedBox(height: 20),
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
@@ -261,6 +275,7 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   ),
+                  SizedBox(height: 10),
                   FutureBuilder(
                     future: Article.fetchArticles(page: 1),
                     builder: (context, snapshot) {
@@ -297,6 +312,7 @@ class _HomeState extends State<Home> {
                                 ),
                               ),
                             ),
+                            SizedBox(height: 20),
                           ],
                         );
                       } else {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class AdminApprovalPage extends StatelessWidget {
   const AdminApprovalPage({super.key});
@@ -12,7 +13,10 @@ class AdminApprovalPage extends StatelessWidget {
         backgroundColor: Colors.yellow[700],
       ),
       body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('barcodes').where('approved', isEqualTo: false).snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('barcodes')
+            .where('approved', isEqualTo: false)
+            .snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
             return Center(child: CircularProgressIndicator());
@@ -40,12 +44,13 @@ class AdminApprovalPage extends StatelessWidget {
                   subtitle: Text(category),
                   leading: logoURL != null
                       ? Image.network(
-                          logoURL,
-                          width: 50,
-                          height: 50,
-                          errorBuilder: (context, error, stackTrace) => Icon(Icons.image_not_supported), // Fallback icon on error
-                        )
-                      : Icon(Icons.image_not_supported), // Default icon if no logo
+                    logoURL,
+                    width: 50,
+                    height: 50,
+                    errorBuilder: (context, error, stackTrace) =>
+                        Icon(Icons.image_not_supported), // Fallback icon
+                  )
+                      : Icon(Icons.image_not_supported), // Default icon
                   trailing: IconButton(
                     icon: Icon(Icons.arrow_forward),
                     onPressed: () => Navigator.push(
@@ -81,7 +86,8 @@ class AdminApprovalPage extends StatelessWidget {
     }
 
     // Fallback URL
-    final companyName = (data['companyName'] ?? '').toLowerCase().replaceAll(' ', '');
+    final companyName =
+    (data['companyName'] ?? '').toLowerCase().replaceAll(' ', '');
     return 'https://img.logo.dev/$companyName.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
   }
 }
@@ -95,6 +101,7 @@ class ApprovalDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final logoURL = _getLogoUrl(data);
+    final evidenceLink = data['evidenceLink'] ?? '';
 
     return Scaffold(
       appBar: AppBar(
@@ -104,55 +111,109 @@ class ApprovalDetailPage extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Barcode: ${data['barcodeNum'] ?? 'N/A'}', style: TextStyle(fontSize: 18)),
+            if (logoURL != null)
+              Image.network(
+                logoURL,
+                height: 100,
+                errorBuilder: (context, error, stackTrace) =>
+                    Icon(Icons.image_not_supported), // Fallback
+              )
+            else
+              Text('No logo available',
+                  style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
+            SizedBox(height: 20),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Barcode: ${data['barcodeNum'] ?? 'N/A'}',
+                  style: TextStyle(fontSize: 18)),
+            ),
             SizedBox(height: 10),
-            Text('Brand Type: ${data['brandType'] ?? 'N/A'}', style: TextStyle(fontSize: 18)),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Brand Type: ${data['brandType'] ?? 'N/A'}',
+                  style: TextStyle(fontSize: 18)),
+            ),
             SizedBox(height: 10),
-            Text('Category: ${data['category'] ?? 'N/A'}', style: TextStyle(fontSize: 18)),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Category: ${data['category'] ?? 'N/A'}',
+                  style: TextStyle(fontSize: 18)),
+            ),
             SizedBox(height: 10),
-            Text('Company Name: ${data['companyName'] ?? 'N/A'}', style: TextStyle(fontSize: 18)),
-            SizedBox(height: 10),
-            InkWell(
-              child: Text('Evidence Link', style: TextStyle(fontSize: 18, color: Colors.blue, decoration: TextDecoration.underline)),
-              onTap: () {
-                final link = data['evidenceLink'] ?? '';
-                if (link.isNotEmpty) {
-                  // launchUrl(Uri.parse(link));
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('No evidence link available.')),
-                  );
-                }
-              },
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Company Name: ${data['companyName'] ?? 'N/A'}',
+                  style: TextStyle(fontSize: 18)),
             ),
             SizedBox(height: 20),
-            logoURL != null
-                ? Image.network(
-                    logoURL,
-                    height: 100,
-                    errorBuilder: (context, error, stackTrace) => Icon(Icons.image_not_supported), // Fallback
-                  )
-                : Text('No logo available', style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
+            Center(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () {
+                  if (evidenceLink.isNotEmpty) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          appBar: AppBar(title: Text('Evidence Link')),
+                          body: InAppWebView(
+                            initialUrlRequest: URLRequest(
+                              url: WebUri(evidenceLink),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('No evidence link available.')),
+                    );
+                  }
+                },
+                child: Text('View Evidence'),
+              ),
+            ),
             Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                   onPressed: () async {
-                    await FirebaseFirestore.instance.collection('barcodes').doc(docId).update({
-                      'approved': true
-                    });
+                    await FirebaseFirestore.instance
+                        .collection('barcodes')
+                        .doc(docId)
+                        .update({'approved': true});
                     Navigator.pop(context);
                   },
                   child: Text('Approve'),
                 ),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                   onPressed: () async {
-                    await FirebaseFirestore.instance.collection('barcodes').doc(docId).delete();
+                    await FirebaseFirestore.instance
+                        .collection('barcodes')
+                        .doc(docId)
+                        .delete();
                     Navigator.pop(context);
                   },
                   child: Text('Reject'),
@@ -169,24 +230,15 @@ class ApprovalDetailPage extends StatelessWidget {
   String? _getLogoUrl(Map<String, dynamic> data) {
     if (data.containsKey('logoURL') && data['logoURL'] != null) {
       final logoData = data['logoURL'];
-
-      // Check if logoURL is an array
+      if (logoData is String && logoData.isNotEmpty) {
+        return logoData;
+      }
       if (logoData is List && logoData.isNotEmpty) {
-        // Match the domain with the company's domain in the data
-        final domain = (data['companyName'] ?? '').toLowerCase().replaceAll(' ', '') + '.com';
-
-        // Find the logo by matching the domain
-        final matchedLogo = logoData.firstWhere((logo) => logo['domain'] == domain, orElse: () => null);
-
-        // Return the logo_url if a match is found
-        if (matchedLogo != null) {
-          return matchedLogo['logo_url'];
-        }
+        return logoData.first;
       }
     }
-
-    // Fallback URL (if no match found)
-    final companyName = (data['companyName'] ?? '').toLowerCase().replaceAll(' ', '');
+    final companyName =
+    (data['companyName'] ?? '').toLowerCase().replaceAll(' ', '');
     return 'https://img.logo.dev/$companyName.com?token=pk_AEpg6u4jSUiuT_wJxuISUQ';
   }
 }
